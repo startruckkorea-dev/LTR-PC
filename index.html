@@ -805,11 +805,20 @@ function renderLines() {
       <td><input type="text" value="${l.from||''}" placeholder="출발지" onchange="lines[${i}].from=this.value" style="width:100%;border:1px solid #d2d0ce;border-radius:4px;padding:5px 6px;font-size:12px"></td>
       <td><input type="text" value="${l.to||''}" placeholder="도착지" onchange="lines[${i}].to=this.value" style="width:100%;border:1px solid #d2d0ce;border-radius:4px;padding:5px 6px;font-size:12px"></td>
       <td><input type="text" value="${l.purpose||''}" placeholder="목적" onchange="lines[${i}].purpose=this.value" style="width:100%;border:1px solid #d2d0ce;border-radius:4px;padding:5px 6px;font-size:12px"></td>
-      <td><input type="number" step="0.1" min="0" value="${l.mileage||''}" placeholder="0" oninput="lines[${i}].mileage=this.value;renderLines()" style="width:100%;border:1px solid #d2d0ce;border-radius:4px;padding:5px 6px;font-size:12px;text-align:right"></td>
-      <td style="text-align:right;font-weight:600;color:#0078d4">${total?total.toLocaleString('ko-KR'):'<span style="color:#a19f9d">-</span>'}</td>
+      <td><input type="number" step="0.1" min="0" value="${l.mileage||''}" placeholder="0" oninput="onMileageInput(${i}, this)" style="width:100%;border:1px solid #d2d0ce;border-radius:4px;padding:5px 6px;font-size:12px;text-align:right"></td>
+      <td id="line-total-${i}" style="text-align:right;font-weight:600;color:#0078d4">${total?total.toLocaleString('ko-KR'):'<span style="color:#a19f9d">-</span>'}</td>
       <td><button class="btn-del" onclick="deleteLine(${i})">✕</button></td>
     </tr>`;
   }).join('');
+  updateTotals();
+}
+
+// Mileage 입력 시 테이블 전체를 다시 그리지 않고 해당 행의 Total(KRW)과 하단 합계만 갱신 (입력 중 포커스 끊김 방지)
+function onMileageInput(i, el) {
+  lines[i].mileage = el.value;
+  const total = calcLineTotal(el.value);
+  const cell = document.getElementById('line-total-'+i);
+  if(cell) cell.innerHTML = total ? total.toLocaleString('ko-KR') : '<span style="color:#a19f9d">-</span>';
   updateTotals();
 }
 
