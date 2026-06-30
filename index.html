@@ -909,12 +909,14 @@ async function saveRequest(status) {
     voucherId = 'LTR-PC-'+dateStr+'_ID-'+requestId;
     await api(`/sites/${siteId}/lists/${LIST_REQUESTS}/items/${requestId}/fields`, 'PATCH', {Title: voucherId});
 
+    let attachmentWarning = '';
     if(ltrFiles.length){
       try{
         const drivesData=await api(`/sites/${siteId}/drives`);
         const drive=drivesData.value.find(d=>d.name==='AttachedFiles')||drivesData.value[0];
         const t=await token();
         const linksArr=[];
+        let failedFiles=[];
         for(const file of ltrFiles){
           try{
             const buf=await file.arrayBuffer();
@@ -926,13 +928,23 @@ async function saveRequest(status) {
               const u=await res.json();
               const safeKey=btoa(unescape(encodeURIComponent(drive.id+'###'+u.id)));
               linksArr.push(file.name+'||ENC||'+safeKey);
+            } else {
+              const errBody = await res.text().catch(()=> '');
+              console.error('File upload failed:', file.name, res.status, errBody);
+              failedFiles.push(file.name+' ('+res.status+')');
             }
-          }catch(fe){console.error('File upload error:',fe);}
+          }catch(fe){console.error('File upload error:',fe); failedFiles.push(file.name+' ('+fe.message+')');}
         }
         if(linksArr.length){
           await api(`/sites/${siteId}/lists/${LIST_REQUESTS}/items/${requestId}/fields`,'PATCH',{AttachmentRef:linksArr.join(';')});
         }
-      }catch(fe){console.error('Drive error:',fe);}
+        if(failedFiles.length){
+          attachmentWarning = ' / ⚠️ 첨부파일 실패: '+failedFiles.join(', ');
+        }
+      }catch(fe){
+        console.error('Drive error:',fe);
+        attachmentWarning = ' / ⚠️ 첨부파일 업로드 오류: '+fe.message;
+      }
     }
 
     if(status==='대기') {
@@ -953,7 +965,7 @@ async function saveRequest(status) {
       }
     }
 
-    showAccAlert('결재 요청이 완료되었습니다.', 'Title: '+voucherId);
+    showAccAlert('결재 요청이 완료되었습니다.', 'Title: '+voucherId+attachmentWarning, attachmentWarning?'⚠️':'✅');
     resetForm(); await loadMyList(); switchTab('list');
   } catch(e) {
     console.error('saveRequest error:', e);
@@ -1268,7 +1280,6 @@ async function openVoucherSP(spId){
     ${row('Title', `<span style="font-weight:700">${v.Title||'-'}</span>`)}
     ${row('상태', `<span class="${stMap[v.Status]||'badge-대기'}">${stLabel[v.Status]||v.Status||'-'}</span>`)}
     ${row('신청자', v.RequesterEmail||'-')}
-    ${row('부서장(결재자)', (v.DeptHeadName||'-')+' · '+(v.DeptHeadEmail||''))}
     ${row('신청일시', submittedDate)}
 
     <div class="det-sec">첨부파일</div>
