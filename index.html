@@ -734,11 +734,11 @@ async function loadEmployees(){
     const wb=XLSX.read(buf,{type:'array'});
     const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
     window._employeeData = rows.map(r=>({
-      dept: (r['Function']||r['Dept']||r['부서']||'').toString().trim(),
-      team: (r['팀(Team)']||r['Team']||r['팀']||'').toString().trim(),
-      name: (r['Name_ENG']||r['이름']||r['Name']||'').toString().trim(),
-      email:(r['Email']||r['이메일']||'').toString().trim()
-    })).filter(e=>e.email);
+      dept: (r['Department']||'').toString().trim(),
+      team: (r['Team']||'').toString().trim(),
+      name: (r['EngName']||'').toString().trim(),
+      email:(r['EMail']||r['email']||'').toString().trim()
+    })).filter(e=>e.email&&e.name);
     console.log('[Employee] Loaded:', window._employeeData.length, 'entries');
     renderApproval();
   }catch(e){ console.warn('[Employee] 로드 실패:', e.message); }
