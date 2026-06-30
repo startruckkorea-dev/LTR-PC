@@ -385,14 +385,14 @@ table.lines input:focus, table.lines select:focus { outline: none; border-color:
       </div>
     </div>
     <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
-      <select id="admin-status" onchange="applyAdminFilters()" style="border:1px solid #d2d0ce;border-radius:4px;padding:6px 10px;font-size:.82rem;font-family:inherit">
+      <select id="admin-status" onchange="applyAdminFilters()" style="border:1px solid #d2d0ce;border-radius:4px;padding:6px 10px;font-size:.72rem;font-family:inherit">
         <option value="">전체 상태</option>
         <option value="대기">대기</option>
         <option value="승인완료">승인완료</option>
         <option value="반려">반려</option>
         <option value="철회">철회</option>
       </select>
-      <input type="text" id="admin-search" oninput="applyAdminFilters()" placeholder="신청자 / Title / Department Head 검색..." style="border:1px solid #d2d0ce;border-radius:4px;padding:6px 10px;font-size:.82rem;font-family:inherit;min-width:220px">
+      <input type="text" id="admin-search" oninput="applyAdminFilters()" placeholder="신청자/Title/Department Head" style="border:1px solid #d2d0ce;border-radius:4px;padding:6px 10px;font-size:.72rem;font-family:inherit;min-width:220px">
       <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
         <span style="font-size:.82rem;color:#605e5c;font-weight:500" id="admin-count"></span>
         <button onclick="exportAdminExcel()" style="padding:6px 14px;background:#107c10;color:#fff;border:none;border-radius:4px;font-size:.82rem;cursor:pointer;white-space:nowrap">📊 Excel 내보내기</button>
