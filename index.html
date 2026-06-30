@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STK Local Travel Reimbursement (Personal Car)</title>
+<link rel="icon" type="image/webp" href="data:image/webp;base64,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">
+<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.28.0/lib/msal-browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', sans-serif; background: #f3f2f1; min-height: 100vh; }
+
+/* ── Login ── */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(145deg,#0f2744 0%,#0078d4 100%)}
+.login-card{background:#fff;border-radius:20px;padding:52px 48px 40px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.22);max-width:440px;width:100%}
+.login-logo{width:68px;height:68px;background:linear-gradient(135deg,#0078d4,#00bcf2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 22px;box-shadow:0 8px 20px rgba(0,120,212,.3)}
+.login-title{font-size:1.5rem;font-weight:700;color:#1a1a2e;margin-bottom:6px}
+.login-co{font-size:.85rem;color:#a19f9d;margin-bottom:4px}
+.login-guide{font-size:.88rem;color:#323130;margin-bottom:28px}
+.btn-login{background:linear-gradient(135deg,#0078d4,#005a9e);color:#fff;border:none;border-radius:10px;padding:13px 0;font-size:.92rem;font-weight:600;cursor:pointer;width:100%;font-family:inherit;transition:all .2s}
+.btn-login:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,120,212,.4)}
+.btn-login:disabled{background:#cbd5e0;cursor:not-allowed;transform:none;box-shadow:none}
+#login-err{color:#e53e3e;font-size:.78rem;margin-top:10px;display:none}
+.login-page-footer{position:fixed;bottom:0;left:0;right:0;padding:10px 24px;display:flex;justify-content:space-between;align-items:center;font-size:11px;color:rgba(255,255,255,.55);background:rgba(0,0,0,.18)}
+
+/* ── App ── */
+#app { display: none; max-width: 1280px; margin: 0 auto; padding: 24px 20px 48px; }
+/* #app max-width는 switchTab()에서 동적으로 제어 (GW 동일: 폼=960px, 목록=1280px) */
+#app-header { display: none; }
+.app-header{background:#fff;border-radius:8px;padding:18px 24px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:flex-start;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.app-title{font-size:1.1rem;font-weight:700;color:#323130}
+.app-sub{font-size:.72rem;color:#605e5c;margin-top:3px}
+.btn-logout{background:#fff;border:1px solid #d2d0ce;border-radius:4px;padding:5px 14px;font-size:.78rem;cursor:pointer;color:#323130;font-family:inherit}
+.btn-logout:hover{background:#f3f2f1}
+
+/* ── Tabs ── */
+.tabs { display: flex; gap: 2px; margin-bottom: 16px; flex-wrap: wrap; }
+.tab { padding: 8px 18px; border: none; background: #fff; border-radius: 4px 4px 0 0; font-size: 14px; cursor: pointer; color: #605e5c; border-bottom: 3px solid transparent; white-space: nowrap; }
+.tab.active { color: #0078d4; border-bottom: 3px solid #0078d4; font-weight: 500; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── Card ── */
+.card { background: #fff; border-radius: 8px; padding: 24px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+.card-title { font-size: 14px; font-weight: 600; color: #323130; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #edebe9; }
+.section-title { font-size: 13px; font-weight: 600; color: #0078d4; margin: 18px 0 10px; padding: 6px 10px; background: #f0f6ff; border-radius: 4px; border-left: 3px solid #0078d4; }
+
+/* ── Form ── */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 12px; }
+.form-row.three { grid-template-columns: 1fr 1fr 1fr; }
+.form-row.four { grid-template-columns: 1fr 1fr 1fr 1fr; }
+.form-row.full { grid-template-columns: 1fr; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group label { font-size: 12px; font-weight: 500; color: #605e5c; }
+.form-group label .req { color: #a4262c; margin-left: 3px; }
+.auto-tag { font-size: 10px; background: #e1f0ff; color: #0078d4; padding: 1px 5px; border-radius: 3px; margin-left: 4px; }
+.form-group select, .form-group input, .form-group textarea {
+  border: 1px solid #d2d0ce; border-radius: 4px; padding: 7px 10px;
+  font-size: 13px; color: #323130; background: #fff; font-family: inherit;
+}
+.form-group select:focus, .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #0078d4; }
+.form-group select:disabled, .form-group input:disabled { background: #f3f2f1; color: #a19f9d; }
+.form-group input[readonly] { background: #f3f2f1; color: #605e5c; }
+.form-group textarea { resize: vertical; min-height: 70px; }
+
+/* BP 검색 */
+.bp-search-row { display: flex; gap: 6px; }
+.bp-search-row input { flex: 1; }
+.btn-search { padding: 7px 12px; border: 1px solid #d2d0ce; border-radius: 4px; background: #f3f2f1; font-size: 12px; cursor: pointer; white-space: nowrap; }
+.btn-search:hover { background: #edebe9; }
+
+/* ── Account Lines ── */
+.lines-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.lines-scroll { overflow-x: auto; }
+table.lines { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 900px; }
+table.lines th { background: #f3f2f1; padding: 7px 8px; text-align: left; border: 1px solid #edebe9; font-size: 11px; font-weight: 600; color: #605e5c; white-space: nowrap; }
+table.lines td { padding: 4px 6px; border: 1px solid #edebe9; vertical-align: middle; }
+table.lines tr:hover td { background: #f0f6ff; }
+table.lines input, table.lines select { padding: 5px 6px; font-size: 12px; border: 1px solid #d2d0ce; border-radius: 3px; width: 100%; }
+table.lines input:focus, table.lines select:focus { outline: none; border-color: #0078d4; }
+.btn-del { background: none; border: none; color: #a19f9d; cursor: pointer; font-size: 15px; padding: 2px 4px; border-radius: 3px; }
+.btn-del:hover { color: #a4262c; background: #fde7e9; }
+
+/* ── Totals ── */
+.totals-bar { display: flex; justify-content: flex-end; align-items: center; gap: 12px; padding: 12px 16px; background: #f3f2f1; border-top: 2px solid #edebe9; border-radius: 0 0 4px 4px; margin-top: -1px; flex-wrap: wrap; }
+.totals-bar .total-label { font-size: 11px; color: #605e5c; font-weight: 600; letter-spacing: .3px; margin-right: 2px; }
+.totals-bar .total-main { font-size: 16px; font-weight: 700; color: #0078d4; }
+.totals-bar .total-krw { font-size: 11px; color: #605e5c; }
+.totals-dr-cr { display: flex; gap: 6px; align-items: center; }
+.totals-dr-cr .dr-block { background: #dbeafe; color: #1d4ed8; border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 700; }
+.totals-dr-cr .cr-block { background: #fde8e8; color: #c0392b; border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 700; }
+.totals-dr-cr .eq-block { background: #dff6dd; color: #107c10; border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 700; }
+.totals-dr-cr .neq-block { background: #fde7e9; color: #a4262c; border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 700; }
+.appr-block { background:#fff; border:1px solid #edebe9; border-radius:8px; padding:14px 16px; margin-bottom:10px; }
+.appr-block.appr-fixed { background:#f0f6ff; border-color:#c7e0f4; }
+.appr-block-title { font-size:12px; font-weight:700; color:#323130; margin-bottom:10px; }
+.appr-block-title .hint { font-weight:400; color:#605e5c; margin-left:4px; }
+.appr-block-title .req-mark { color:#d83b01; }
+.appr-info { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; }
+.appr-info input { padding:7px 10px; border:1px solid #d2d0ce; border-radius:4px; font-size:12px; font-family:inherit; background:#faf9f8; color:#323130; }
+.appr-info input[readonly] { background:#f3f2f1; color:#605e5c; }
+.appr-select-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:8px; }
+.appr-select-row select { padding:7px 10px; border:1px solid #d2d0ce; border-radius:4px; font-size:12px; font-family:inherit; }
+.line-step { display:inline-flex; align-items:center; gap:4px; margin-right:4px; }
+.line-step-badge { background:#0078d4; color:#fff; border-radius:10px; padding:1px 8px; font-size:11px; font-weight:700; }
+.line-step-badge.fixed { background:#107c10; }
+.line-arrow { color:#a19f9d; font-size:13px; }
+
+/* ── Approval ── */
+.appr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); gap: 10px; }
+.appr-box { border: 1px solid #edebe9; border-radius: 6px; overflow: hidden; }
+.appr-box .ah { background: #f3f2f1; padding: 5px 10px; font-size: 11px; font-weight: 600; color: #605e5c; }
+.appr-box .ab { padding: 8px 10px; }
+.appr-box .an { font-weight: 600; font-size: 12px; color: #323130; }
+.appr-box .ad { font-size: 11px; color: #a19f9d; margin: 2px 0 5px; }
+.appr-box .ar { font-size: 10px; background: #e1f0ff; color: #0078d4; padding: 1px 6px; border-radius: 10px; display: inline-block; }
+.badge-req { background: #fff4ce; color: #7d5700; border: 1px solid #ffe58f; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; display: inline-block; margin-top: 5px; }
+.badge-na  { background: #f3f2f1; color: #a19f9d; border: 1px solid #edebe9; font-size: 10px; padding: 2px 7px; border-radius: 10px; display: inline-block; margin-top: 5px; font-style: italic; }
+
+/* ── Buttons ── */
+.file-area { border: 1.5px dashed #d2d0ce; border-radius: 4px; padding: 20px; text-align: center; cursor: pointer; transition: border-color .2s; }
+.file-area:hover { border-color: #0078d4; background: #f0f6ff; }
+.file-area input { display: none; }
+.file-area .hint { font-size: 13px; color: #605e5c; }
+.file-list { margin-top: 8px; display: flex; flex-direction: column; gap: 5px; }
+.file-item { display: flex; justify-content: space-between; align-items: center; background: #f3f2f1; border-radius: 4px; padding: 5px 10px; font-size: 12px; }
+.file-item button { background: none; border: none; color: #a4262c; cursor: pointer; font-size: 14px; }
+.btn { padding: 8px 18px; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: all .15s; }
+.btn-row{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+.btn-primary{background:#0078d4;color:#fff;border:none;border-radius:4px;padding:8px 24px;font-size:.85rem;cursor:pointer;font-family:inherit}
+.btn-primary:hover{background:#106ebe}
+/* Modal (GW 동일 스타일) */
+#voucher-detail-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center}
+#voucher-detail-modal.open{display:flex}
+.modal-box{background:#fff;border-radius:8px;padding:28px 32px;max-width:680px;width:95%;max-height:88vh;overflow-y:auto;position:relative}
+.modal-close{position:absolute;top:12px;right:16px;background:none;border:none;font-size:1.2rem;cursor:pointer;color:#605e5c}
+.modal-title{font-size:1rem;font-weight:700;color:#323130;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid #edebe9}
+.det-sec{font-size:.72rem;font-weight:700;color:#0078d4;background:#f0f6ff;padding:5px 10px;border-radius:4px;border-left:3px solid #0078d4;margin:14px 0 8px}
+.det-row{display:flex;padding:5px 0;border-bottom:1px solid #f3f2f1;font-size:.8rem}
+.det-row:last-child{border-bottom:none}
+.det-lbl{color:#605e5c;width:160px;flex-shrink:0}
+.det-val{color:#323130;font-weight:500;flex:1}
+.appr-item{display:flex;justify-content:space-between;align-items:flex-start;padding:9px 10px;border-bottom:1px solid #edebe9;font-size:.8rem;gap:10px}
+.appr-item:last-child{border-bottom:none}
+.status-대기{color:#7d5700;font-weight:600}
+.status-대기잠김{color:#a19f9d;font-weight:600}
+.status-승인{color:#107c10;font-weight:600}
+.status-반려{color:#a4262c;font-weight:600}
+.btn-secondary{background:#fff;border:1px solid #d2d0ce;border-radius:4px;padding:8px 24px;font-size:.85rem;cursor:pointer;font-family:inherit}
+.btn-secondary:hover{background:#f3f2f1}
+.btn-add { background: #f0f6ff; border: 1px solid #c7e0f4; color: #0078d4; font-size: 12px; padding: 6px 12px; }
+.btn-add:hover { background: #deecf9; }
+
+/* ── Notice ── */
+.notice { padding: 9px 12px; border-radius: 4px; font-size: 12px; margin-bottom: 12px; }
+.notice-info { background: #e1f0ff; color: #004578; border-left: 3px solid #0078d4; }
+.notice-warn { background: #fff4ce; color: #5d4037; border-left: 3px solid #ffb900; }
+
+/* ── List ── */
+.list-filters { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
+.list-filters select, .list-filters input { border: 1px solid #d2d0ce; border-radius: 4px; padding: 6px 10px; font-size: 13px; font-family: inherit; }
+.voucher-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.voucher-table th { background: #f3f2f1; padding: 9px 10px; text-align: left; border-bottom: 2px solid #edebe9; font-size: 12px; font-weight: 600; color: #605e5c; white-space: nowrap; }
+.voucher-table td { padding: 10px 10px; border-bottom: 1px solid #edebe9; vertical-align: middle; }
+.voucher-table tr:hover td { background: #f0f6ff; cursor: pointer; }
+.type-badge { padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; }
+.t-AP { background: #e1f0ff; color: #004578; }
+.t-AP_IMS { background: #e8eaf6; color: #283593; }
+.t-AP_CR { background: #fff3e0; color: #e65100; }
+.t-AR { background: #e8f5e9; color: #1b5e20; }
+.t-GL { background: #f3e5f5; color: #4a148c; }
+.t-FA { background: #fce4ec; color: #880e4f; }
+.t-ADV { background: #e0f7fa; color: #006064; }
+.t-SET { background: #e0f7fa; color: #006064; }
+/* Badge (GW 동일) */
+.badge-대기{background:#fff4ce;color:#7d5700;border-radius:10px;padding:2px 8px;font-size:.68rem;font-weight:600}
+.badge-대기잠김{background:#f1f5f9;color:#64748b;border-radius:10px;padding:2px 8px;font-size:.68rem;font-weight:600}
+.badge-승인완료{background:#dff6dd;color:#107c10;border-radius:10px;padding:2px 8px;font-size:.68rem;font-weight:600}
+.badge-반려{background:#fde7e9;color:#a4262c;border-radius:10px;padding:2px 8px;font-size:.68rem;font-weight:600}
+.badge-철회{background:#f1f5f9;color:#64748b;border-radius:10px;padding:2px 8px;font-size:.68rem;font-weight:600}
+.list-empty { text-align: center; padding: 48px; color: #a19f9d; font-size: 14px; }
+
+/* ── BP Modal ── */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 200; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.open { display: flex; }
+.modal { background: #fff; border-radius: 8px; box-shadow: 0 16px 48px rgba(0,0,0,.22); width: 100%; max-width: 520px; max-height: 75vh; overflow-y: auto; }
+.modal-head { padding: 14px 18px; background: #0078d4; color: #fff; display: flex; justify-content: space-between; align-items: center; font-weight: 600; border-radius: 8px 8px 0 0; }
+.modal-close { background: none; border: none; color: #fff; font-size: 18px; cursor: pointer; }
+.modal-body { padding: 16px 18px; }
+.search-bar { display: flex; gap: 6px; margin-bottom: 12px; }
+.search-bar input { flex: 1; border: 1px solid #d2d0ce; border-radius: 4px; padding: 7px 10px; font-size: 13px; font-family: inherit; }
+.result-item { padding: 9px 12px; border: 1px solid #edebe9; border-radius: 4px; margin-bottom: 5px; cursor: pointer; transition: all .15s; }
+.result-item:hover { border-color: #0078d4; background: #f0f6ff; }
+.result-item .rc { font-size: 11px; color: #a19f9d; }
+.result-item .rn { font-size: 13px; font-weight: 600; color: #323130; }
+.result-item .rs { font-size: 11px; color: #605e5c; }
+
+/* GL 검색 */
+.gl-item { padding: 8px 12px; border: 1px solid #edebe9; border-radius: 4px; margin-bottom: 4px; cursor: pointer; transition: all .15s; }
+.gl-item:hover { border-color: #0078d4; background: #f0f6ff; }
+.gl-item .gc { font-size: 11px; color: #0078d4; font-weight: 700; }
+.gl-item .gn { font-size: 12px; color: #323130; }
+
+/* Loading */
+#dyn-loading { display: none; position: fixed; inset: 0; background: rgba(255,255,255,.8); z-index: 300; align-items: center; justify-content: center; flex-direction: column; gap: 12px; }
+#dyn-loading.show { display: flex; }
+.spinner { width: 32px; height: 32px; border: 3px solid #edebe9; border-top: 3px solid #0078d4; border-radius: 50%; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 600px) {
+  .form-row { grid-template-columns: 1fr; }
+  .form-row.three, .form-row.four { grid-template-columns: 1fr 1fr; }
+  .appr-grid { grid-template-columns: repeat(2,1fr); }
+}
+
+/* ── Tab btn (GW style) ── */
+.tab-btn { padding: 8px 18px; border: none; background: #fff; border-radius: 4px 4px 0 0; font-size: 14px; cursor: pointer; color: #605e5c; border-bottom: 3px solid transparent; }
+.tab-btn.active { color: #0078d4; border-bottom: 3px solid #0078d4; font-weight: 500; }
+.tab-btn:hover:not(.active) { background: #f3f2f1; }
+.badge{display:none;background:#a4262c;color:#fff;border-radius:10px;padding:1px 6px;font-size:.65rem;margin-left:5px;font-weight:700}
+
+.list-table{width:100%;border-collapse:collapse;font-size:.82rem;min-width:800px}
+.list-table tbody tr[onclick]{cursor:pointer}
+.list-table tbody tr[onclick]:hover{background:#f0f6ff}
+.list-table th,.list-table td{white-space:nowrap}
+.list-table th{padding:9px 12px;text-align:left;background:#f3f2f1;border-bottom:1px solid #edebe9;font-weight:600;color:#323130;font-size:.75rem}
+.list-table td{padding:9px 12px;border-bottom:1px solid #edebe9;color:#323130}
+.list-table tr:hover td{background:#f9f8f7}
+</style></head>
+<body>
+
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">🚗</div>
+    <div class="login-title">Local Travel Reimbursement</div>
+    <div class="login-co">STK 개인차량 유류비 청구 시스템 (LTR-PC)</div>
+    <div class="login-guide">Hyosung M365 계정으로 로그인하세요</div>
+    <button class="btn-login" id="btn-login" onclick="signIn()" disabled>로딩 중...</button>
+    <div id="login-err"></div>
+    <div style="font-size:.75rem;color:#a19f9d;margin-top:24px;text-align:center">© Star Truck Korea · LTR-PC</div>
+  </div>
+  <div class="login-page-footer">
+    <span>© 2026 Star Truck Korea · LTR-PC</span>
+    <span>This system is internally developed by Star Truck Korea IT Dept. Unauthorized access is strictly prohibited.</span>
+  </div>
+</div>
+
+
+<div id="app">
+
+  <div class="app-header" id="app-header" style="display:none">
+    <div>
+      <div class="app-title">Local Travel Reimbursement (Personal Car)</div>
+      <div class="app-sub">STK 개인차량 유류비 청구 시스템</div>
+      <div style="font-size:11px;color:#605e5c;margin-top:4px">
+        <div id="ltr-contact">문의 Email: jimmy.lee@hyosung.com</div>
+        <div id="ltr-rate-info">유류비 단가: <b id="rate-display">450</b> 원/km</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span id="user-name" style="font-size:.8rem;color:#605e5c"></span>
+        <button class="btn-logout" onclick="signOut()">로그아웃</button>
+      </div>
+      <a href="https://aps.startruckkorea.com/" target="_self" title="STK 통합 결재함" style="text-decoration:none;display:inline-flex;align-items:center;gap:7px;background:#0078d4;color:#fff;border-radius:6px;padding:7px 14px;font-size:.8rem;font-weight:600;font-family:'Segoe UI',sans-serif;letter-spacing:-.2px;box-shadow:0 1px 4px rgba(0,120,212,.25);transition:background .15s" onmouseover="this.style.background='#106ebe'" onmouseout="this.style.background='#0078d4'"><span style="font-size:1rem;line-height:1">📬</span><span>돌아가기</span></a>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-new-btn" onclick="switchTab('new')">신청서 작성</button>
+    <button class="tab-btn" id="tab-list-btn" onclick="switchTab('list')">내 신청 목록</button>
+    <button class="tab-btn" id="tab-appr-btn" onclick="switchTab('appr')">결재함 <span class="badge" id="appr-badge"></span></button>
+    <button class="tab-btn" id="tab-admin-btn" onclick="switchTab('admin')"><span style="color:#fff;background:#0078d4;border-radius:4px;padding:2px 10px;display:inline-block">관리자</span></button>
+  </div>
+
+  <!-- ── 신청 목록 ── -->
+  <div id="tab-list" style="display:none">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div class="card-title" style="margin-bottom:0">신청 목록</div>
+      </div>
+      <div class="list-filters">
+        <select id="f-status" onchange="renderList()">
+          <option value="">전체 상태</option>
+          <option value="대기">대기</option>
+          <option value="승인완료">승인완료</option>
+          <option value="반려">반려</option>
+          <option value="철회">철회</option>
+        </select>
+        <input type="text" id="f-kw" placeholder="검색 (From/To/Purpose)..." oninput="renderList()" style="min-width:200px">
+      </div>
+      <table class="list-table">
+        <thead><tr><th style="width:40px">번호</th><th>신청자</th><th>Title</th><th>부서장</th><th style="text-align:right">총 거리(km)</th><th style="text-align:right">Total(KRW)</th><th>Status</th><th>신청일</th></tr></thead>
+        <tbody id="list-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── 신청서 작성 ── -->
+  <div id="tab-new">
+    <div class="card">
+      <div class="card-title">개인차량 유류비 청구서 작성 <span id="voucher-id-badge" style="font-size:11px;font-weight:400;color:#a19f9d"></span></div>
+
+      <div class="section-title">1. 신청자 정보</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Requester <span class="auto-tag">자동</span></label>
+          <input type="text" id="v-requester" readonly>
+        </div>
+        <div class="form-group">
+          <label>신청일 <span class="auto-tag">자동</span></label>
+          <input type="date" id="v-date" readonly>
+        </div>
+      </div>
+
+      <div class="section-title" style="display:flex;justify-content:space-between;align-items:center">
+        <span>2. 이동 내역 (Mileage Log) — <span class="rate-tag" style="color:#0078d4">450</span> 원/km 자동 계산</span>
+        <button class="btn btn-add" onclick="addLine()">＋ 라인 추가</button>
+      </div>
+      <div class="lines-scroll">
+        <table class="lines">
+          <thead>
+            <tr>
+              <th style="width:36px">No</th>
+              <th style="width:120px">Date</th>
+              <th style="min-width:140px">From</th>
+              <th style="min-width:140px">To</th>
+              <th style="min-width:180px">Purpose</th>
+              <th style="width:100px;text-align:right">Mileage(km)</th>
+              <th style="width:130px;text-align:right">Total(KRW)</th>
+              <th style="width:32px"></th>
+            </tr>
+          </thead>
+          <tbody id="lines-body"></tbody>
+        </table>
+      </div>
+      <div class="totals-bar">
+        <span class="total-label">합계</span>
+        <span class="total-main" id="total-amt">0 km / KRW 0</span>
+      </div>
+
+      <div class="section-title">3. 첨부파일 <span style="font-size:11px;font-weight:400;color:#605e5c">(NAVER 지도 캡처 등 마일리지 확인용, 선택)</span></div>
+      <div class="file-area" onclick="document.getElementById('ltr-file-input').click()">
+        <input type="file" id="ltr-file-input" multiple onchange="onLtrFileSelect(event)">
+        <div class="hint">📎 클릭하여 파일 첨부 (최대 20MB)</div>
+      </div>
+      <div class="file-list" id="ltr-file-list"></div>
+
+      <div class="section-title">4. 결재라인 (Approved by Department Head)</div>
+      <div id="appr-blocks-container"></div>
+
+      <div class="btn-row">
+        <button class="btn-secondary" onclick="resetForm()">Reset</button>
+        <button class="btn-primary" onclick="saveRequest('대기')">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-appr" style="display:none">
+    <div class="card" style="padding:0;overflow-x:auto">
+      <table class="list-table">
+        <thead><tr>
+          <th style="width:40px">번호</th><th>신청자</th><th>Title</th><th style="text-align:right">총 거리(km)</th><th style="text-align:right">Total(KRW)</th><th>Status</th><th>신청일</th><th>처리</th>
+        </tr></thead>
+        <tbody id="appr-body">
+          <tr><td colspan="8" style="text-align:center;padding:40px;color:#a19f9d">결재 대기 중인 신청이 없습니다.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── 관리자 ── -->
+  <div id="tab-admin" style="display:none">
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">⚙️ 유류비 단가 설정</div>
+      <div style="font-size:12px;color:#605e5c;margin-bottom:10px">신청서의 Mileage(km) × 단가(원) = Total(KRW)로 자동 계산됩니다. (기존 Excel 수식: =IF(Mileage*450&lt;=0,"",Mileage*450) 과 동일 로직)</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <input type="number" id="admin-rate-input" style="width:140px;padding:8px 10px;border:1px solid #d2d0ce;border-radius:4px;font-size:14px;text-align:right" value="450">
+        <span style="font-size:13px;color:#605e5c">원 / km</span>
+        <button class="btn-primary" style="padding:8px 18px" onclick="saveRate()">저장</button>
+        <span id="rate-save-msg" style="font-size:12px;color:#107c10"></span>
+      </div>
+    </div>
+    <div class="card" style="padding:0;overflow-x:auto">
+      <table class="list-table">
+        <thead><tr>
+          <th style="width:40px">번호</th><th>신청자</th><th>Title</th><th>부서장</th><th style="text-align:right">총 거리(km)</th><th style="text-align:right">Total(KRW)</th><th>Status</th><th>신청일</th>
+        </tr></thead>
+        <tbody id="admin-body">
+          <tr><td colspan="8" style="text-align:center;padding:40px;color:#a19f9d">전체 신청 목록이 여기에 표시됩니다.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="admin-pagination" style="display:flex;align-items:center;justify-content:center;gap:4px;margin-top:12px;flex-wrap:wrap"></div>
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align:center;padding:24px 0 8px;border-top:1px solid #edebe9;margin-top:8px">
+    <div style="font-size:12px;color:#605e5c">© 2026 Star Truck Korea · LTR-PC</div>
+    <div style="font-size:11px;color:#a19f9d;margin-top:3px">This system is internally developed by Star Truck Korea IT Dept. Unauthorized access is strictly prohibited.</div>
+  </div>
+</div>
+
+<!-- GW 스타일 알림 모달 -->
+<div id="acc-alert-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:2000;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:12px;padding:28px 32px;max-width:380px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.18);text-align:center">
+    <div id="acc-alert-icon" style="font-size:2rem;margin-bottom:10px">✅</div>
+    <div id="acc-alert-title" style="font-size:1rem;font-weight:700;color:#1e293b;margin-bottom:6px;line-height:1.6"></div>
+    <div id="acc-alert-sub" style="font-size:.8rem;color:#64748b;margin-bottom:20px;word-break:break-all"></div>
+    <button style="background:#0078d4;color:#fff;border:none;border-radius:8px;padding:9px 32px;font-size:.88rem;font-weight:600;cursor:pointer;font-family:inherit" onclick="closeAccAlert()">확인</button>
+  </div>
+</div>
+
+<div id="voucher-detail-modal" onclick="if(event.target===this)closeDetailModal()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeDetailModal()">×</button>
+    <div class="modal-title">유류비 청구 상세 내용</div>
+    <div id="voucher-detail-content"></div>
+  </div>
+</div>
+
+<!-- 결재 승인/반려 확인 모달 -->
+<div id="appr-confirm-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1500;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:10px;padding:24px 28px;max-width:420px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.2)">
+    <div id="appr-confirm-title" style="font-size:1rem;font-weight:700;color:#323130;margin-bottom:10px"></div>
+    <div id="appr-confirm-msg" style="font-size:.85rem;color:#605e5c;margin-bottom:12px"></div>
+    <textarea id="appr-confirm-comment" style="width:100%;min-height:70px;padding:8px 10px;border:1px solid #d2d0ce;border-radius:4px;font-size:.85rem;font-family:inherit;box-sizing:border-box;resize:vertical"></textarea>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px">
+      <button class="btn-secondary" onclick="closeApprConfirm()">취소</button>
+      <button id="appr-confirm-ok" onclick="confirmApprAction()" style="background:#107c10;color:#fff;border:none;border-radius:4px;padding:8px 24px;font-size:.85rem;cursor:pointer;font-family:inherit">승인</button>
+    </div>
+  </div>
+</div>
+
+<!-- 권한 없음 팝업 (GW 동일) -->
+<div id="no-auth-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,39,68,.45);backdrop-filter:blur(4px);align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:14px;padding:40px 44px;max-width:380px;width:90%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.18)">
+    <div style="width:52px;height:52px;background:#fef2f2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <div style="font-size:1rem;font-weight:700;color:#0f2744;margin-bottom:8px">접근 권한 없음</div>
+    <div style="font-size:.83rem;color:#64748b;line-height:1.7;margin-bottom:20px">관리자 전용 메뉴입니다.<br>접근 권한이 없습니다.</div>
+    <div style="background:#f0f6ff;border:1px solid #bfdbfe;border-radius:8px;padding:14px 16px;margin-bottom:24px;text-align:left">
+      <div style="font-size:.75rem;font-weight:700;color:#1d4ed8;margin-bottom:6px">접근 권한 신청 방법</div>
+      <div style="font-size:.78rem;color:#374151;line-height:1.8">
+        1. BU Admin에게 권한 요청<br>
+        2. BU Admin이 아래 시스템으로 티켓 생성<br>
+        <a href="https://itsm-ticket.startruckkorea.com/" target="_blank" style="color:#1d4ed8;font-weight:600;word-break:break-all">itsm-ticket.startruckkorea.com</a>
+      </div>
+    </div>
+    <button onclick="document.getElementById('no-auth-modal').style.display='none'" style="background:#0078d4;color:#fff;border:none;border-radius:8px;padding:10px 32px;font-size:.88rem;font-weight:600;cursor:pointer;font-family:inherit">확인</button>
+  </div>
+</div>
+
+<script>
+window.addEventListener('error', function(e){
+  console.error('[전역 에러 캐치]', e.message, '| 파일:', e.filename, '| 위치:', e.lineno+':'+e.colno, '| 스택:', e.error?.stack);
+});
+window.addEventListener('unhandledrejection', function(e){
+  console.error('[처리되지 않은 Promise 거부]', e.reason);
+});
+// ── Constants ──
+const CLIENT_ID = '432976c2-b43a-492e-8213-ece505fa1f51';
+const TENANT_ID = '19cab1f5-21f4-44df-8ac6-96d6ca595203';
+// LTR-PC는 신규 시스템이라 List GUID가 아직 없어 표시명(Display Name)으로 참조합니다.
+// (Microsoft Graph는 /lists/{id-or-name} 모두 지원) - 최초 로그인 시 ensureLists()가 자동 생성합니다.
+const LIST_REQUESTS  = 'LTR_Requests';
+const LIST_APPROVALS = 'LTR_Approvals';
+const LIST_CONFIG    = 'LTR_Config';
+const SITE_PATH_DB  = 'startruckkorea.sharepoint.com:/sites/STK-DB:';
+const GRAPH  = 'https://graph.microsoft.com/v1.0';
+const SCOPES = ['User.Read','Sites.ReadWrite.All','Files.ReadWrite.All'];
+
+let msal_g = null, user = null, siteId = null;
+let lines  = [];
+let RATE_PER_KM = 450;
+let _configItemId = null;
+
+// ── System Config (system_config_final.xlsx) - 관리자 권한/문의 이메일용 ──
+let _sysConfig = null;
+async function loadSystemConfig() {
+  if (_sysConfig) return _sysConfig;
+  try {
+    if(!siteId){const s=await api('/sites/'+SITE_PATH_DB);siteId=s.id;}
+    const drivesRes = await api('/sites/'+siteId+'/drives');
+    let docDrive = (drivesRes.value||[]).find(d=>['Documents','문서','Shared Documents'].includes(d.name));
+    if(!docDrive && drivesRes.value?.length) docDrive = drivesRes.value[0];
+    const t = await token();
+    const res = await fetch(GRAPH+'/drives/'+docDrive.id+'/root:/system_config_final.xlsx:/content',
+      {headers:{Authorization:'Bearer '+t}});
+    if(!res.ok) throw new Error('system_config_final.xlsx not found');
+    const buf = await res.arrayBuffer();
+    const wb = XLSX.read(buf,{type:'array'});
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1});
+    const cfg = {};
+    rows.forEach(row=>{
+      const key=(row[0]||'').toString().trim();
+      if(!key||key.startsWith('■')||key.startsWith('※')||key==='설정 KEY'||key.startsWith('STK')) return;
+      cfg[key]={name:(row[1]||'').toString().trim(), email:(row[2]||'').toString().trim()};
+    });
+    _sysConfig = cfg;
+    console.log('[Config] Loaded:', Object.keys(cfg).length, 'entries');
+    return cfg;
+  } catch(e) {
+    console.warn('[Config] 로드 실패, 기본값 사용:', e.message);
+    return null;
+  }
+}
+function cfgEmails(cfg, keys) {
+  const expanded = [];
+  keys.forEach(k => {
+    const match = k.match(/^(.+_ADMIN_)[0-9]+$/);
+    if (match) {
+      const prefix = match[1];
+      let n = 1;
+      while (cfg && cfg[prefix + n]) { expanded.push(prefix + n); n++; }
+    } else {
+      expanded.push(k);
+    }
+  });
+  return [...new Set(expanded)].map(k => (cfg && cfg[k] ? cfg[k].email : '')).filter(Boolean);
+}
+const ADMIN_EMAILS = [];
+let _configLoaded = false;
+
+// ── MSAL ──
+async function signIn() {
+  try {
+    if (window !== window.top) { window.open(location.href,'_blank'); return; }
+    const r = await msal_g.loginPopup({scopes:SCOPES});
+    msal_g.setActiveAccount(r.account);
+    await boot(r.account);
+  } catch(e) { showLoginError(e.message||e.errorMessage||'로그인 실패'); }
+}
+function signOut() { msal_g.logoutRedirect(); }
+function showLoginError(msg) { const el=document.getElementById('login-err'); el.textContent=msg; el.style.display='block'; }
+
+async function token() {
+  try { return (await msal_g.acquireTokenSilent({scopes:SCOPES,account:msal_g.getActiveAccount()})).accessToken; }
+  catch(e) {
+    if(e.name==='InteractionRequiredAuthError'||(e.errorCode&&e.errorCode.includes('interaction_required'))) {
+      await msal_g.acquireTokenRedirect({scopes:SCOPES}); return null;
+    }
+    throw e;
+  }
+}
+async function api(path,method='GET',body=null) {
+  const t=await token();
+  const opts={method,headers:{Authorization:'Bearer '+t,'Content-Type':'application/json'}};
+  if(body) opts.body=JSON.stringify(body);
+  const res=await fetch(GRAPH+path,opts);
+  if(!res.ok) throw new Error((await res.json()).error?.message||res.status);
+  return method==='DELETE'?null:res.json();
+}
+
+// ── 페이지네이션 전체 조회 헬퍼 (GW/BP-Master 동일 패턴, nextLink 자동순회) ──
+async function apiAll(path) {
+  let items = [], url = path;
+  while(url) {
+    const t = await token();
+    const res = await fetch(url.startsWith('http')?url:GRAPH+url, {
+      headers: { Authorization: 'Bearer '+t, Prefer: 'HonorNonIndexedQueriesWarningMayFailRandomly' }
+    });
+    if(!res.ok) throw new Error((await res.json()).error?.message||res.status);
+    const d = await res.json();
+    items = items.concat(d.value || []);
+    url = d['@odata.nextLink'] || null;
+  }
+  return {value: items};
+}
+
+// ── SharePoint List 자동 생성 (최초 1회, 관리자 Sites.ReadWrite.All 권한 필요) ──
+async function ensureList(name, columns) {
+  try {
+    await api('/sites/'+siteId+'/lists/'+name);
+    return false; // 이미 존재
+  } catch(e) {
+    try {
+      await api('/sites/'+siteId+'/lists', 'POST', {
+        displayName: name,
+        columns: columns,
+        list: { template: 'genericList' }
+      });
+      console.log('[Bootstrap] List 생성 완료:', name);
+      return true;
+    } catch(e2) {
+      console.warn('[Bootstrap] List 생성 실패:', name, e2.message);
+      return false;
+    }
+  }
+}
+async function ensureLists() {
+  if(!siteId){const s=await api('/sites/'+SITE_PATH_DB);siteId=s.id;}
+  await ensureList('LTR_Requests', [
+    {name:'RequesterName', text:{}},
+    {name:'RequesterEmail', text:{}},
+    {name:'DeptHeadName', text:{}},
+    {name:'DeptHeadEmail', text:{}},
+    {name:'LinesJSON', text:{allowMultipleLines:true, linesForEditing:6, appendChangesToExistingText:false}},
+    {name:'TotalKm', number:{decimalPlaces:'two'}},
+    {name:'TotalKRW', number:{decimalPlaces:'none'}},
+    {name:'Status', text:{}},
+    {name:'SubmittedDate', dateTime:{displayAs:'standard', format:'dateTime'}},
+    {name:'Comment', text:{allowMultipleLines:true}},
+    {name:'ApprovalDate', dateTime:{displayAs:'standard', format:'dateTime'}},
+    {name:'AttachmentRef', text:{allowMultipleLines:true}}
+  ]);
+  await ensureList('LTR_Approvals', [
+    {name:'RequestID', number:{decimalPlaces:'none'}},
+    {name:'VoucherID', text:{}},
+    {name:'ApproverEmail', text:{}},
+    {name:'ApproverName', text:{}},
+    {name:'ApproverRole', text:{}},
+    {name:'ApprovalOrder', number:{decimalPlaces:'none'}},
+    {name:'Status', text:{}},
+    {name:'Comment', text:{allowMultipleLines:true}},
+    {name:'ApprovalDate', dateTime:{displayAs:'standard', format:'dateTime'}}
+  ]);
+  const created = await ensureList('LTR_Config', [
+    {name:'ConfigKey', text:{}},
+    {name:'ConfigValue', text:{}}
+  ]);
+  if(created) {
+    // 기본 단가 450원 행 생성
+    await api('/sites/'+siteId+'/lists/'+LIST_CONFIG+'/items', 'POST', {
+      fields:{Title:'RatePerKm', ConfigKey:'RatePerKm', ConfigValue:'450'}
+    });
+  }
+}
+
+async function loadRateConfig() {
+  try {
+    if(!siteId){const s=await api('/sites/'+SITE_PATH_DB);siteId=s.id;}
+    const data = await apiAll(`${GRAPH}/sites/${siteId}/lists/${LIST_CONFIG}/items?$expand=fields&$top=50`);
+    const row = data.value.find(i=>i.fields.ConfigKey==='RatePerKm');
+    if(row) {
+      RATE_PER_KM = parseFloat(row.fields.ConfigValue) || 450;
+      _configItemId = row.id;
+    }
+  } catch(e) { console.warn('[Rate] 단가 설정 로드 실패, 기본값(450) 사용:', e.message); }
+  document.getElementById('rate-display').textContent = RATE_PER_KM;
+  const inp = document.getElementById('admin-rate-input');
+  if(inp) inp.value = RATE_PER_KM;
+  document.querySelectorAll('.rate-tag').forEach(el=>el.textContent=RATE_PER_KM);
+  renderLines();
+}
+async function saveRate() {
+  const v = parseFloat(document.getElementById('admin-rate-input').value);
+  if(!v || v<=0) { alert('올바른 단가를 입력하세요.'); return; }
+  try {
+    if(!siteId){const s=await api('/sites/'+SITE_PATH_DB);siteId=s.id;}
+    if(_configItemId) {
+      await api(`/sites/${siteId}/lists/${LIST_CONFIG}/items/${_configItemId}/fields`, 'PATCH', {ConfigValue: String(v)});
+    } else {
+      const r = await api(`/sites/${siteId}/lists/${LIST_CONFIG}/items`, 'POST', {fields:{Title:'RatePerKm',ConfigKey:'RatePerKm',ConfigValue:String(v)}});
+      _configItemId = r.id;
+    }
+    RATE_PER_KM = v;
+    document.getElementById('rate-display').textContent = v;
+    const msg = document.getElementById('rate-save-msg');
+    msg.textContent = '✔ 저장되었습니다 ('+new Date().toLocaleTimeString('ko-KR')+')';
+    setTimeout(()=>msg.textContent='', 3000);
+    renderLines();
+  } catch(e) {
+    showAccAlert('단가 저장 실패', e.message, '⚠️');
+  }
+}
+
+async function boot(account) {
+  user = account;
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('app').style.maxWidth='960px';
+  document.getElementById('app-header').style.display='flex';
+  document.getElementById('user-name').textContent=(account.name||account.username)+' ('+(account.username)+')';
+  document.getElementById('v-requester').value = account.name||account.username;
+  document.getElementById('v-date').value = new Date().toISOString().slice(0,10);
+  renderApproval();
+  renderLines();
+  switchTab('new');
+  loadEmployees().catch(e=>console.warn('Employee 로드 실패:', e.message));
+
+  if(!siteId){const s=await api('/sites/'+SITE_PATH_DB);siteId=s.id;}
+  await ensureLists().catch(e=>console.warn('[Bootstrap] ensureLists 실패:', e.message));
+  await loadRateConfig();
+
+  // system_config 로드 → 관리자 권한 판별
+  loadSystemConfig().then(cfg=>{
+    if(!cfg) { _configLoaded = true; return; }
+    const adminList = cfgEmails(cfg, ['LTR-PC_ADMIN_1']); // ADMIN_N 패턴 자동 확장
+    if(adminList.length) ADMIN_EMAILS.splice(0, ADMIN_EMAILS.length, ...adminList);
+    _configLoaded = true;
+  }).catch(()=>{ _configLoaded = true; });
+
+  checkApprovalBadge();
+  setInterval(()=>{ try{ checkApprovalBadge(); }catch(e){} }, 60000);
+}
+
+// ── 직원 검색 (employee_search.xlsx) - 부서장 선택용 ──
+async function loadEmployees(){
+  try{
+    if(!siteId){const s=await api('/sites/'+SITE_PATH_DB);siteId=s.id;}
+    const drivesData=await api('/sites/'+siteId+'/drives');
+    const docDrive=drivesData.value.find(d=>['문서','Documents','Shared Documents'].includes(d.name))||drivesData.value[0];
+    const t=await token();
+    const res=await fetch(GRAPH+'/drives/'+docDrive.id+'/root:/employee_search.xlsx:/content',{headers:{Authorization:'Bearer '+t}});
+    if(!res.ok)throw new Error('직원 데이터 로드 실패: '+res.status);
+    const buf=await res.arrayBuffer();
+    const wb=XLSX.read(buf,{type:'array'});
+    const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+    window._employeeData = rows.map(r=>({
+      dept: (r['Function']||r['Dept']||r['부서']||'').toString().trim(),
+      team: (r['팀(Team)']||r['Team']||r['팀']||'').toString().trim(),
+      name: (r['Name_ENG']||r['이름']||r['Name']||'').toString().trim(),
+      email:(r['Email']||r['이메일']||'').toString().trim()
+    })).filter(e=>e.email);
+    console.log('[Employee] Loaded:', window._employeeData.length, 'entries');
+    renderApproval();
+  }catch(e){ console.warn('[Employee] 로드 실패:', e.message); }
+}
+
+function switchTab(tab) {
+  if(tab === 'admin') {
+    if(!_configLoaded) {
+      const btn = document.getElementById('tab-admin-btn');
+      if(btn){ btn.style.opacity='0.6'; btn.style.pointerEvents='none'; btn.title='권한 확인 중...'; }
+      setTimeout(()=>{
+        if(btn){ btn.style.opacity=''; btn.style.pointerEvents=''; btn.title=''; }
+        switchTab('admin');
+      }, 1500);
+      return;
+    }
+    const emails = ADMIN_EMAILS.map(e=>e.toLowerCase());
+    const isAdmin = user && emails.some(e=>
+      e===(user.username||'').toLowerCase() || e===(user.email||'').toLowerCase()
+    );
+    if(!isAdmin) {
+      const m = document.getElementById('no-auth-modal');
+      if(m) m.style.display = 'flex';
+      return;
+    }
+  }
+  ['new','list','appr','admin'].forEach(t=>{
+    const el = document.getElementById('tab-'+t);
+    if(el) el.style.display = (t===tab)?'block':'none';
+    const b = document.getElementById('tab-'+t+'-btn');
+    if(b) b.classList.toggle('active', t===tab);
+  });
+  const appEl = document.getElementById('app');
+  if(appEl) appEl.style.maxWidth = tab==='new' ? '960px' : '1280px';
+  if(tab==='list') loadMyList();
+  if(tab==='appr') loadApprovalQueue();
+  if(tab==='admin') loadAdminList();
+}
+
+// ── 부서장(Department Head) 선택 - 부서→팀→직원 3단계 드롭다운 (GW/acc_voucher 동일 패턴) ──
+function renderApproval() {
+  const container = document.getElementById('appr-blocks-container');
+  const depts=[...new Set((window._employeeData||[]).map(e=>e.dept))].filter(Boolean).sort();
+  const deptOpts=depts.map(d=>`<option value="${d}">${d}</option>`).join('');
+  container.innerHTML = `<div class="appr-block">
+    <div class="appr-block-title">1차 결재자 <span class="req-mark">*</span> <span style="font-size:10px;color:#8a6914;background:#fff4ce;border-radius:10px;padding:1px 6px;margin-left:4px">직접 선택</span> <span class="hint">— Department Head (부서장)</span></div>
+    <div class="appr-select-row">
+      <select id="ga1-dept" onchange="gwDeptChange(1)"><option value="">부서</option>${deptOpts}</select>
+      <select id="ga1-team" onchange="gwTeamChange(1)" disabled><option value="">팀</option></select>
+      <select id="ga1-person" onchange="gwPersonChange(1)" disabled><option value="">직원 선택</option></select>
+    </div>
+    <div class="appr-info">
+      <input type="text"  id="ga1-name"  readonly placeholder="이름">
+      <input type="email" id="ga1-email" readonly placeholder="이메일">
+    </div></div>`;
+}
+function gwDeptChange(order){
+  const dept=document.getElementById('ga'+order+'-dept').value;
+  const tSel=document.getElementById('ga'+order+'-team');
+  const pSel=document.getElementById('ga'+order+'-person');
+  document.getElementById('ga'+order+'-name').value='';
+  document.getElementById('ga'+order+'-email').value='';
+  const teams=[...new Set((window._employeeData||[]).filter(e=>e.dept===dept).map(e=>e.team))].sort();
+  tSel.innerHTML='<option value="">팀</option>'+teams.map(t=>`<option value="${t}">${t}</option>`).join('');
+  tSel.disabled=!dept; pSel.innerHTML='<option value="">직원 선택</option>'; pSel.disabled=true;
+}
+function gwTeamChange(order){
+  const dept=document.getElementById('ga'+order+'-dept').value;
+  const team=document.getElementById('ga'+order+'-team').value;
+  const pSel=document.getElementById('ga'+order+'-person');
+  document.getElementById('ga'+order+'-name').value='';
+  document.getElementById('ga'+order+'-email').value='';
+  const persons=(window._employeeData||[]).filter(e=>e.dept===dept&&e.team===team);
+  pSel.innerHTML='<option value="">직원 선택</option>'+persons.map(p=>`<option value="${p.email}">${p.name}</option>`).join('');
+  pSel.disabled=!team;
+}
+function gwPersonChange(order){
+  const email=document.getElementById('ga'+order+'-person').value;
+  const p=(window._employeeData||[]).find(e=>e.email===email);
+  document.getElementById('ga'+order+'-name').value=p?p.name:'';
+  document.getElementById('ga'+order+'-email').value=p?p.email:'';
+}
+
+// ── 이동 내역 (Mileage Log) 라인 ──
+function addLine() {
+  lines.push({date:new Date().toISOString().slice(0,10), from:'', to:'', purpose:'', mileage:''});
+  renderLines();
+}
+function deleteLine(i) { lines.splice(i,1); renderLines(); }
+
+function calcLineTotal(mileage) {
+  const km = parseFloat(mileage)||0;
+  const total = km*RATE_PER_KM;
+  return total<=0 ? '' : Math.round(total);
+}
+
+function renderLines() {
+  const tbody = document.getElementById('lines-body');
+  if(!lines.length) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:20px;color:#a19f9d">＋ 라인 추가 버튼을 눌러 이동 내역을 추가하세요</td></tr>`;
+    updateTotals(); return;
+  }
+  tbody.innerHTML = lines.map((l,i)=>{
+    const total = calcLineTotal(l.mileage);
+    return `<tr>
+      <td style="text-align:center;color:#a19f9d">${i+1}</td>
+      <td><input type="date" value="${l.date||''}" onchange="lines[${i}].date=this.value" style="width:100%;border:1px solid #d2d0ce;border-radius:4px;padding:5px 6px;font-size:12px"></td>
+      <td><input type="text" value="${l.from||''}" placeholder="출발지" onchange="lines[${i}].from=this.value" style="width:100%;border:1px solid #d2d0ce;border-radius:4px;padding:5px 6px;font-size:12px"></td>
+      <td><input type="text" value="${l.to||''}" placeholder="도착지" onchange="lines[${i}].to=this.value" style="width:100%;border:1px solid #d2d0ce;border-radius:4px;padding:5px 6px;font-size:12px"></td>
+      <td><input type="text" value="${l.purpose||''}" placeholder="목적" onchange="lines[${i}].purpose=this.value" style="width:100%;border:1px solid #d2d0ce;border-radius:4px;padding:5px 6px;font-size:12px"></td>
+      <td><input type="number" step="0.1" min="0" value="${l.mileage||''}" placeholder="0" oninput="lines[${i}].mileage=this.value;renderLines()" style="width:100%;border:1px solid #d2d0ce;border-radius:4px;padding:5px 6px;font-size:12px;text-align:right"></td>
+      <td style="text-align:right;font-weight:600;color:#0078d4">${total?total.toLocaleString('ko-KR'):'<span style="color:#a19f9d">-</span>'}</td>
+      <td><button class="btn-del" onclick="deleteLine(${i})">✕</button></td>
+    </tr>`;
+  }).join('');
+  updateTotals();
+}
+
+function updateTotals() {
+  let totalKm=0, totalKrw=0;
+  lines.forEach(l=>{
+    const km=parseFloat(l.mileage)||0;
+    totalKm+=km;
+    totalKrw+=calcLineTotal(l.mileage)||0;
+  });
+  document.getElementById('total-amt').textContent = totalKm.toLocaleString('ko-KR')+' km / KRW '+totalKrw.toLocaleString('ko-KR');
+  return {totalKm, totalKrw};
+}
+
+// ── 첨부파일 ──
+function showAccAlert(title, sub='', icon='✅') {
+  document.getElementById('acc-alert-icon').textContent = icon;
+  document.getElementById('acc-alert-title').textContent = title;
+  document.getElementById('acc-alert-sub').textContent = sub;
+  document.getElementById('acc-alert-modal').style.display = 'flex';
+}
+function closeAccAlert() {
+  document.getElementById('acc-alert-modal').style.display = 'none';
+}
+
+let ltrFiles = [];
+function onLtrFileSelect(e) {
+  const newFiles = Array.from(e.target.files);
+  for(const f of newFiles) { if(!ltrFiles.find(x=>x.name===f.name)) ltrFiles.push(f); }
+  const totalMB = ltrFiles.reduce((s,f)=>s+f.size,0)/1024/1024;
+  if(totalMB>20){ alert('첨부파일 총 용량이 '+totalMB.toFixed(1)+'MB입니다. 20MB 이하로 첨부해주세요.'); ltrFiles=ltrFiles.filter(f=>!newFiles.includes(f)); }
+  document.getElementById('ltr-file-input').value='';
+  renderLtrFiles();
+}
+function removeLtrFile(i){ ltrFiles.splice(i,1); renderLtrFiles(); }
+function renderLtrFiles(){
+  const totalMB=ltrFiles.reduce((s,f)=>s+f.size,0)/1024/1024;
+  document.getElementById('ltr-file-list').innerHTML = ltrFiles.map((f,i)=>
+    `<div class="file-item"><span>📄 ${f.name} <span style="color:#a19f9d">(${(f.size/1024/1024).toFixed(2)}MB)</span></span><button onclick="removeLtrFile(${i})">✕</button></div>`
+  ).join('')+(ltrFiles.length?`<div style="font-size:11px;color:#605e5c;text-align:right;margin-top:4px">합계: ${totalMB.toFixed(2)}MB / 20MB</div>`:'');
+}
+
+function buildApprover() {
+  const nm=(document.getElementById('ga1-name')||{}).value||'';
+  const em=(document.getElementById('ga1-email')||{}).value||'';
+  return {role:'MC', label:'Department Head (부서장)', name:nm||'TBD', email:em, order:1};
+}
+
+async function saveRequest(status) {
+  if(!lines.length){alert('이동 내역을 1개 이상 추가하세요.');return;}
+  const hasMissing = lines.some(l=>!l.date||!l.from||!l.to||!parseFloat(l.mileage));
+  if(status==='대기' && hasMissing){ alert('모든 라인의 Date / From / To / Mileage(km)를 입력하세요.'); return; }
+  const approver = buildApprover();
+  if(status==='대기' && !approver.email){ alert('결재라인(부서장)을 선택하세요.'); return; }
+
+  const {totalKm, totalKrw} = updateTotals();
+  const today=new Date();
+  const kst=new Date(today.getTime()+9*3600000);
+  const dateStr=kst.toISOString().slice(0,10);
+  let voucherId='LTR-PC-'+dateStr+'_ID-TEMP';
+
+  const btn = document.querySelector(`button[onclick*="saveRequest('${status}')"]`);
+  try {
+    if(btn){btn.disabled=true; btn.textContent='저장 중...';}
+    if(!siteId){const s=await api('/sites/'+SITE_PATH_DB);siteId=s.id;}
+
+    const reqRes = await api(`/sites/${siteId}/lists/${LIST_REQUESTS}/items`, 'POST', {
+      fields: {
+        Title: voucherId,
+        Status: status,
+        RequesterName: user?.name||'',
+        RequesterEmail: user?.username||'',
+        DeptHeadName: approver.name,
+        DeptHeadEmail: approver.email,
+        LinesJSON: JSON.stringify(lines),
+        TotalKm: totalKm,
+        TotalKRW: totalKrw,
+        SubmittedDate: status==='대기'?new Date().toISOString():null
+      }
+    });
+    const requestId = reqRes.id;
+    voucherId = 'LTR-PC-'+dateStr+'_ID-'+requestId;
+    await api(`/sites/${siteId}/lists/${LIST_REQUESTS}/items/${requestId}/fields`, 'PATCH', {Title: voucherId});
+
+    if(ltrFiles.length){
+      try{
+        const drivesData=await api(`/sites/${siteId}/drives`);
+        const drive=drivesData.value.find(d=>d.name==='AttachedFiles')||drivesData.value[0];
+        const t=await token();
+        const linksArr=[];
+        for(const file of ltrFiles){
+          try{
+            const buf=await file.arrayBuffer();
+            const res=await fetch(
+              GRAPH+'/drives/'+drive.id+'/root:/LTR-PC_AttachedFiles/'+voucherId+'/'+encodeURIComponent(file.name)+':/content',
+              {method:'PUT',headers:{Authorization:'Bearer '+t,'Content-Type':file.type||'application/octet-stream'},body:buf}
+            );
+            if(res.ok){
+              const u=await res.json();
+              const safeKey=btoa(unescape(encodeURIComponent(drive.id+'###'+u.id)));
+              linksArr.push(file.name+'||ENC||'+safeKey);
+            }
+          }catch(fe){console.error('File upload error:',fe);}
+        }
+        if(linksArr.length){
+          await api(`/sites/${siteId}/lists/${LIST_REQUESTS}/items/${requestId}/fields`,'PATCH',{AttachmentRef:linksArr.join(';')});
+        }
+      }catch(fe){console.error('Drive error:',fe);}
+    }
+
+    if(status==='대기') {
+      await api(`/sites/${siteId}/lists/${LIST_APPROVALS}/items`, 'POST', {
+        fields: {
+          Title: voucherId+'_1',
+          RequestID: parseInt(requestId),
+          VoucherID: voucherId,
+          ApproverEmail: approver.email,
+          ApproverName: approver.name,
+          ApproverRole: approver.role,
+          ApprovalOrder: 1,
+          Status: '대기'
+        }
+      });
+    }
+
+    showAccAlert('결재 요청이 완료되었습니다.', 'Title: '+voucherId);
+    resetForm(); await loadMyList(); switchTab('list');
+  } catch(e) {
+    console.error('saveRequest error:', e);
+    showAccAlert('오류가 발생했습니다.', e.message, '⚠️');
+  } finally {
+    if(btn){btn.disabled=false; btn.textContent='Submit';}
+  }
+}
+
+function resetForm(){
+  document.getElementById('voucher-id-badge').textContent='';
+  ltrFiles=[]; renderLtrFiles();
+  lines=[]; renderLines(); renderApproval();
+}
+
+// ── 내 신청 목록 ──
+let voucherListCache = [];
+async function loadMyList() {
+  if(!siteId){const s=await api('/sites/'+SITE_PATH_DB);siteId=s.id;}
+  const email = user?.username||'';
+  const url = `${GRAPH}/sites/${siteId}/lists/${LIST_REQUESTS}/items?$expand=fields`+
+    `&$filter=fields/RequesterEmail eq '${email}'&$top=500`;
+  try {
+    const data = await apiAll(url);
+    voucherListCache = data.value
+      .map(item=>({_spId:item.id,...item.fields}))
+      .sort((a,b)=>new Date(b.SubmittedDate||0)-new Date(a.SubmittedDate||0));
+  } catch(e) {
+    console.error('loadMyList error:', e);
+    voucherListCache = [];
+  }
+  renderList();
+}
+const stMap={'대기':'badge-대기','대기(잠김)':'badge-대기잠김','승인완료':'badge-승인완료','반려':'badge-반려','철회':'badge-철회'};
+const stLabel={'대기':'대기','대기(잠김)':'대기(잠김)','승인완료':'승인완료','반려':'반려','철회':'철회'};
+const fmtK=n=>Math.round(n||0).toLocaleString('ko-KR');
+const fmtDate = s => {
+  if(!s) return '-';
+  const d = new Date(s);
+  const p = n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+};
+function renderList(){
+  const fs=document.getElementById('f-status')?.value||'';
+  const fk=(document.getElementById('f-kw')?.value||'').toLowerCase();
+  const list=voucherListCache.filter(v=>{
+    if(fs&&v.Status!==fs)return false;
+    if(fk){
+      let lns=[]; try{lns=JSON.parse(v.LinesJSON||'[]');}catch(e){}
+      const hit = lns.some(l=>(l.from||'').toLowerCase().includes(fk)||(l.to||'').toLowerCase().includes(fk)||(l.purpose||'').toLowerCase().includes(fk));
+      if(!hit) return false;
+    }
+    return true;
+  });
+  const body=document.getElementById('list-body');
+  if(!list.length){
+    body.innerHTML=`<tr><td colspan="8" class="list-empty">${voucherListCache.length?'검색 결과가 없습니다.':'신청 내역이 없습니다.'}</td></tr>`;
+    return;
+  }
+  body.innerHTML=list.map((v,i)=>`<tr onclick="openVoucherSP('${v._spId}')">
+    <td style="color:#a19f9d;font-size:.78rem">${list.length-i}</td>
+    <td style="font-size:.78rem;color:#605e5c">${v.RequesterEmail||'-'}</td>
+    <td style="font-size:.75rem;color:#0078d4">${v.Title||'-'}</td>
+    <td style="font-size:.78rem;color:#605e5c">${v.DeptHeadName||'-'}</td>
+    <td style="text-align:right;font-size:.78rem">${(v.TotalKm||0).toLocaleString('ko-KR')}</td>
+    <td style="text-align:right;font-weight:700;color:#0078d4;font-size:.78rem">${fmtK(v.TotalKRW)}</td>
+    <td><span class="${stMap[v.Status]||'badge-대기'}">${stLabel[v.Status]||v.Status}</span></td>
+    <td style="font-size:.78rem;color:#605e5c">${fmtDate(v.SubmittedDate)}</td>
+  </tr>`).join('');
+}
+
+// ── 결재함 ──
+let approvalQueueCache = [];
+async function checkApprovalBadge(){
+  if(!siteId) return;
+  try{
+    const myEmail = (user?.username||'').toLowerCase();
+    const data = await apiAll(`${GRAPH}/sites/${siteId}/lists/${LIST_APPROVALS}/items?$expand=fields&$top=999`);
+    const mine = data.value.filter(i=>(i.fields.ApproverEmail||'').toLowerCase()===myEmail && i.fields.Status==='대기');
+    const badge = document.getElementById('appr-badge');
+    if(badge){
+      if(mine.length){ badge.textContent = mine.length; badge.style.display = 'inline'; }
+      else badge.style.display = 'none';
+    }
+  }catch(e){ console.warn('[Badge] 결재 배지 갱신 실패:', e.message); }
+}
+async function loadApprovalQueue() {
+  const tbody = document.getElementById('appr-body');
+  tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#a19f9d">불러오는 중...</td></tr>';
+  if(!siteId){const s=await api('/sites/'+SITE_PATH_DB);siteId=s.id;}
+  try {
+    const myEmail = (user?.username||'').toLowerCase();
+    const [apprData, reqData] = await Promise.all([
+      apiAll(`${GRAPH}/sites/${siteId}/lists/${LIST_APPROVALS}/items?$expand=fields&$top=999`),
+      apiAll(`${GRAPH}/sites/${siteId}/lists/${LIST_REQUESTS}/items?$expand=fields&$top=999`)
+    ]);
+    const reqMap = {};
+    reqData.value.forEach(r=>{ reqMap[r.id] = {...r.fields, _spId: r.id}; });
+    const myPending = apprData.value.filter(i=>{
+      const ae = (i.fields.ApproverEmail||'').toLowerCase();
+      return ae === myEmail && i.fields.Status === '대기';
+    });
+    approvalQueueCache = myPending.map(item=>({
+      _apprId: item.id,
+      ...item.fields,
+      _voucher: reqMap[String(item.fields.RequestID)] || {}
+    })).sort((a,b)=>Number(b.RequestID)-Number(a.RequestID));
+    renderApprovalQueue();
+    const badge = document.getElementById('appr-badge');
+    if(badge){ badge.textContent = approvalQueueCache.length; badge.style.display = approvalQueueCache.length ? 'inline' : 'none'; }
+  } catch(e) {
+    console.error('loadApprovalQueue error:', e);
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:40px;color:#a4262c">${e.message}</td></tr>`;
+  }
+}
+function renderApprovalQueue() {
+  const tbody = document.getElementById('appr-body');
+  if(!approvalQueueCache.length){
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#a19f9d">결재 대기 중인 신청이 없습니다.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = approvalQueueCache.map((item,i)=>{
+    const v = item._voucher;
+    return `<tr onclick="openVoucherSP('${v._spId}')" style="cursor:pointer">
+      <td style="color:#a19f9d;font-size:.78rem">${i+1}</td>
+      <td style="font-size:.78rem;color:#605e5c">${v.RequesterEmail||'-'}</td>
+      <td style="font-size:.75rem;color:#0078d4">${v.Title||'-'}</td>
+      <td style="text-align:right;font-size:.78rem">${(v.TotalKm||0).toLocaleString('ko-KR')}</td>
+      <td style="text-align:right;font-weight:700;color:#0078d4;font-size:.78rem">${fmtK(v.TotalKRW)}</td>
+      <td><span class="${stMap[v.Status]||'badge-대기'}">${stLabel[v.Status]||v.Status}</span></td>
+      <td style="font-size:.78rem;color:#605e5c">${fmtDate(v.SubmittedDate)}</td>
+      <td onclick="event.stopPropagation()" style="text-align:center;white-space:nowrap">
+        <button style="padding:4px 10px;font-size:.72rem;background:#107c10;color:#fff;border:none;border-radius:4px;cursor:pointer;margin-right:4px" onclick="showApprConfirm(${item._apprId},'승인',${item.RequestID})">승인</button>
+        <button style="padding:4px 10px;font-size:.72rem;background:#a4262c;color:#fff;border:none;border-radius:4px;cursor:pointer" onclick="showApprConfirm(${item._apprId},'반려',${item.RequestID})">반려</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+let _pendingAppr = null;
+function showApprConfirm(apprId, action, reqId) {
+  _pendingAppr = {apprId, action, reqId};
+  const isReject = action === '반려';
+  document.getElementById('appr-confirm-title').textContent = isReject ? '❌ 반려 확인' : '✅ 승인 확인';
+  document.getElementById('appr-confirm-msg').textContent = isReject ? '반려 사유를 입력해주세요. (필수)' : '이 신청을 승인하시겠습니까?';
+  document.getElementById('appr-confirm-comment').value = '';
+  document.getElementById('appr-confirm-comment').placeholder = isReject ? '반려 사유 입력 (필수)' : '의견 입력 (선택사항)';
+  const okBtn = document.getElementById('appr-confirm-ok');
+  okBtn.textContent = isReject ? '반려' : '승인';
+  okBtn.style.background = isReject ? '#a4262c' : '#107c10';
+  document.getElementById('appr-confirm-modal').style.display = 'flex';
+}
+function closeApprConfirm() {
+  document.getElementById('appr-confirm-modal').style.display = 'none';
+}
+async function confirmApprAction() {
+  if(!_pendingAppr) return;
+  const {apprId, action, reqId} = _pendingAppr;
+  const comment = document.getElementById('appr-confirm-comment').value.trim();
+  if(action === '반려' && !comment) { alert('반려 사유를 입력해주세요.'); return; }
+  closeApprConfirm();
+  await processApproval(apprId, action, reqId, comment);
+}
+// LTR-PC는 단일 결재 단계(부서장)이므로 승인 시 바로 전표를 승인완료 처리합니다.
+async function processApproval(apprId, action, reqId, comment='') {
+  try {
+    const t = await token();
+    const curRes = await fetch(`${GRAPH}/sites/${siteId}/lists/${LIST_APPROVALS}/items/${apprId}?$expand=fields`,
+      {headers:{Authorization:'Bearer '+t}});
+    const cur = await curRes.json();
+    if(cur.fields.Status !== '대기') {
+      showAccAlert('이미 처리된 결재 항목입니다.', '다른 창에서 처리되었거나 이미 완료된 항목입니다.', '⚠️');
+      loadApprovalQueue();
+      return;
+    }
+    await api(`/sites/${siteId}/lists/${LIST_APPROVALS}/items/${apprId}/fields`, 'PATCH', {
+      Status: action==='승인' ? '승인' : '반려',
+      Comment: comment,
+      ApprovalDate: new Date().toISOString()
+    });
+    await api(`/sites/${siteId}/lists/${LIST_REQUESTS}/items/${reqId}/fields`, 'PATCH', {
+      Status: action==='승인' ? '승인완료' : '반려'
+    });
+    showAccAlert(action+' 처리되었습니다.', '', action==='반려'?'❌':'✅');
+    closeDetailModal();
+    loadApprovalQueue();
+  } catch(e) {
+    console.error('processApproval error:', e);
+    showAccAlert('오류가 발생했습니다.', e.message, '⚠️');
+  }
+}
+
+// ── 관리자 ──
+let adminListCache = [];
+async function loadAdminList() {
+  _adminPgState.page = 0;
+  const body = document.getElementById('admin-body');
+  body.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#a19f9d">불러오는 중...</td></tr>';
+  if(!siteId){const s=await api('/sites/'+SITE_PATH_DB);siteId=s.id;}
+  try {
+    const data = await apiAll(`${GRAPH}/sites/${siteId}/lists/${LIST_REQUESTS}/items?$expand=fields&$top=999`);
+    adminListCache = data.value
+      .map(item=>({_spId:item.id,...item.fields}))
+      .sort((a,b)=>new Date(b.SubmittedDate||0)-new Date(a.SubmittedDate||0));
+  } catch(e) {
+    console.error('loadAdminList error:', e);
+    adminListCache = [];
+    body.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#a19f9d">신청 목록을 불러올 수 없습니다.</td></tr>';
+    return;
+  }
+  renderAdminList();
+}
+const PAGE_SIZE = 20;
+const _adminPgState = { page: 0 };
+function adminPgGo(p){
+  const pages = Math.max(1, Math.ceil(adminListCache.length / PAGE_SIZE));
+  if(p<0||p>=pages) return;
+  _adminPgState.page = p;
+  renderAdminList();
+  document.getElementById('admin-body')?.closest('table')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function renderAdminList(){
+  const body = document.getElementById('admin-body');
+  if(!adminListCache.length){
+    body.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#a19f9d">작성된 신청서가 없습니다.</td></tr>';
+    document.getElementById('admin-pagination').innerHTML = '';
+    return;
+  }
+  const total = adminListCache.length;
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const cur = Math.min(_adminPgState.page, pages - 1);
+  const slice = adminListCache.slice(cur * PAGE_SIZE, (cur + 1) * PAGE_SIZE);
+  body.innerHTML = slice.map((v,idx)=>{
+    const reverseNo = total - (cur * PAGE_SIZE + idx);
+    return `<tr onclick="openVoucherSP('${v._spId}')">
+    <td style="color:#a19f9d;font-size:.78rem">${reverseNo}</td>
+    <td style="font-size:.78rem;color:#605e5c">${v.RequesterEmail||'-'}</td>
+    <td style="font-size:.75rem;color:#0078d4">${v.Title||'-'}</td>
+    <td style="font-size:.78rem;color:#605e5c">${v.DeptHeadName||'-'}</td>
+    <td style="text-align:right;font-size:.78rem">${(v.TotalKm||0).toLocaleString('ko-KR')}</td>
+    <td style="text-align:right;font-weight:700;color:#0078d4;font-size:.78rem">${fmtK(v.TotalKRW)}</td>
+    <td><span class="${stMap[v.Status]||'badge-대기'}">${stLabel[v.Status]||v.Status}</span></td>
+    <td style="font-size:.78rem;color:#605e5c">${fmtDate(v.SubmittedDate)}</td>
+  </tr>`;
+  }).join('');
+  const pag = document.getElementById('admin-pagination');
+  let pagHtml = '';
+  pagHtml += `<button onclick="adminPgGo(${cur-1})" ${cur===0?'disabled':''} style="padding:5px 10px;border:1px solid #d2d0ce;border-radius:4px;background:#fff;cursor:pointer;font-size:12px">‹</button>`;
+  for(let p=0;p<pages;p++){
+    pagHtml += `<button onclick="adminPgGo(${p})" style="padding:5px 10px;border:1px solid ${p===cur?'#0078d4':'#d2d0ce'};border-radius:4px;background:${p===cur?'#0078d4':'#fff'};color:${p===cur?'#fff':'#323130'};cursor:pointer;font-size:12px">${p+1}</button>`;
+  }
+  pagHtml += `<button onclick="adminPgGo(${cur+1})" ${cur===pages-1?'disabled':''} style="padding:5px 10px;border:1px solid #d2d0ce;border-radius:4px;background:#fff;cursor:pointer;font-size:12px">›</button>`;
+  pag.innerHTML = pagHtml;
+}
+
+// ── 상세 모달 ──
+async function openVoucherSP(spId){
+  const v = voucherListCache.find(x=>x._spId===spId)
+    || adminListCache.find(x=>x._spId===spId)
+    || (approvalQueueCache.find(x=>x._voucher?._spId===spId)?._voucher);
+  if(!v) return;
+  let lines_data = [];
+  try { lines_data = JSON.parse(v.LinesJSON||'[]'); }
+  catch(e) { console.error('[openVoucherSP] LinesJSON 파싱 실패:', e.message); }
+
+  const row = (label, value) => `<div class="det-row"><div class="det-lbl">${label}</div><div class="det-val">${value||'-'}</div></div>`;
+  const submittedDate = v.SubmittedDate ? new Date(v.SubmittedDate).toLocaleString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '-';
+
+  const lineRows = lines_data.map((l,i)=>{
+    const total = calcLineTotal(l.mileage);
+    return `<tr style="border-bottom:1px solid #f3f2f1">
+      <td style="padding:6px 7px;color:#605e5c;font-size:.74rem">${i+1}</td>
+      <td style="padding:6px 7px;font-size:.74rem">${l.date||'-'}</td>
+      <td style="padding:6px 7px;font-size:.74rem">${l.from||'-'}</td>
+      <td style="padding:6px 7px;font-size:.74rem">${l.to||'-'}</td>
+      <td style="padding:6px 7px;font-size:.74rem">${l.purpose||'-'}</td>
+      <td style="padding:6px 7px;text-align:right;font-size:.74rem">${l.mileage||'-'}</td>
+      <td style="padding:6px 7px;text-align:right;font-weight:600;font-size:.74rem">${total?total.toLocaleString('ko-KR'):'-'}</td>
+    </tr>`;
+  }).join('');
+
+  let attHtml = '<span style="color:#a19f9d">첨부파일 없음</span>';
+  if(v.AttachmentRef) {
+    const items = v.AttachmentRef.split(';').filter(Boolean);
+    attHtml = items.map(it=>{
+      const [name, safeKey] = it.split('||ENC||');
+      let driveId='', itemId='';
+      try{
+        const decoded = decodeURIComponent(escape(atob(safeKey)));
+        const sepIdx = decoded.indexOf('###');
+        driveId = decoded.substring(0, sepIdx);
+        itemId = decoded.substring(sepIdx+3);
+      }catch(e){}
+      return `<div style="padding:4px 0;font-size:.8rem"><a href="#" class="file-dl-link" data-drive="${encodeURIComponent(driveId)}" data-id="${encodeURIComponent(itemId)}" data-name="${encodeURIComponent(name)}" style="color:#0078d4;cursor:pointer;text-decoration:none">📎 ${name}</a></div>`;
+    }).join('');
+  }
+
+  document.getElementById('voucher-detail-content').innerHTML = `
+    <div class="det-sec">기본 정보</div>
+    ${row('Title', `<span style="font-weight:700">${v.Title||'-'}</span>`)}
+    ${row('상태', `<span class="${stMap[v.Status]||'badge-대기'}">${stLabel[v.Status]||v.Status||'-'}</span>`)}
+    ${row('신청자', v.RequesterEmail||'-')}
+    ${row('부서장(결재자)', (v.DeptHeadName||'-')+' · '+(v.DeptHeadEmail||''))}
+    ${row('신청일시', submittedDate)}
+
+    <div class="det-sec">첨부파일</div>
+    <div style="padding:4px 0;font-size:.78rem">${attHtml}</div>
+
+    <div class="det-sec">이동 내역 (Mileage Log)</div>
+    <div style="overflow-x:auto;margin-top:4px">
+      <table style="width:100%;border-collapse:collapse;font-size:.74rem;min-width:560px">
+        <thead><tr style="background:#f3f2f1">
+          <th style="padding:6px 7px;text-align:left;color:#605e5c;font-weight:600;font-size:.68rem">No</th>
+          <th style="padding:6px 7px;text-align:left;color:#605e5c;font-weight:600;font-size:.68rem">Date</th>
+          <th style="padding:6px 7px;text-align:left;color:#605e5c;font-weight:600;font-size:.68rem">From</th>
+          <th style="padding:6px 7px;text-align:left;color:#605e5c;font-weight:600;font-size:.68rem">To</th>
+          <th style="padding:6px 7px;text-align:left;color:#605e5c;font-weight:600;font-size:.68rem">Purpose</th>
+          <th style="padding:6px 7px;text-align:right;color:#605e5c;font-weight:600;font-size:.68rem">Mileage(km)</th>
+          <th style="padding:6px 7px;text-align:right;color:#605e5c;font-weight:600;font-size:.68rem">Total(KRW)</th>
+        </tr></thead>
+        <tbody>${lineRows||'<tr><td colspan="7" style="padding:12px;text-align:center;color:#a19f9d;font-size:.78rem">라인 없음</td></tr>'}</tbody>
+      </table>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;padding:9px 8px;background:#f3f2f1;border-radius:4px;margin-top:6px">
+      <span style="font-size:.75rem;color:#605e5c">총 거리(km)</span>
+      <span style="font-weight:700;font-size:.85rem">${(v.TotalKm||0).toLocaleString('ko-KR')}</span>
+      <span style="font-size:.75rem;color:#a19f9d">|</span>
+      <span style="font-size:.75rem;color:#605e5c">Total(KRW)</span>
+      <span style="font-weight:700;font-size:.85rem;color:#0078d4">${fmtK(v.TotalKRW)}</span>
+    </div>
+
+    <div class="det-sec">결재 이력</div>
+    <div id="voucher-appr-history" style="background:#f9f9f9;border-radius:4px;border:1px solid #edebe9">
+      <div style="padding:12px;text-align:center;color:#a19f9d;font-size:.78rem">결재 이력을 불러오는 중...</div>
+    </div>
+    <div id="voucher-appr-action-btns" style="margin-top:14px;text-align:right"></div>
+  `;
+
+  document.getElementById('voucher-detail-modal').classList.add('open');
+  loadApprovalHistory(v._spId);
+
+  document.querySelectorAll('.file-dl-link').forEach(a=>{
+    a.addEventListener('click', async e=>{
+      e.preventDefault();
+      try{
+        const t = await token();
+        const driveId = decodeURIComponent(a.dataset.drive);
+        const itemId  = decodeURIComponent(a.dataset.id);
+        const fname   = decodeURIComponent(a.dataset.name);
+        const meta = await fetch(
+          GRAPH+'/drives/'+driveId+'/items/'+itemId+'?select=id,name,%40microsoft.graph.downloadUrl,webUrl',
+          {headers:{Authorization:'Bearer '+t}}
+        );
+        const mj = await meta.json();
+        const dlUrl = mj['@microsoft.graph.downloadUrl'];
+        if(dlUrl){
+          const anchor=document.createElement('a');
+          anchor.href=dlUrl; anchor.download=fname; anchor.style.display='none';
+          document.body.appendChild(anchor); anchor.click(); document.body.removeChild(anchor);
+        } else if(mj.webUrl){ window.open(mj.webUrl, '_blank'); }
+        else { showAccAlert('다운로드 URL을 가져올 수 없습니다.', 'SharePoint에서 직접 확인해주세요.', '⚠️'); }
+      }catch(err){ showAccAlert('다운로드 오류', err.message, '⚠️'); }
+    });
+  });
+}
+
+async function loadApprovalHistory(spId){
+  const v = voucherListCache.find(x=>x._spId===spId)
+    || adminListCache.find(x=>x._spId===spId)
+    || (approvalQueueCache.find(x=>x._voucher?._spId===spId)?._voucher);
+  if(!v) return;
+  const stClsMap={'대기':'status-대기','승인':'status-승인','승인완료':'status-승인','반려':'status-반려'};
+  const stLabelMap={'대기':'대기','승인':'승인','승인완료':'승인완료','반려':'반려'};
+  const fmtDate2 = s => s ? new Date(s).toLocaleString('ko-KR',{year:'2-digit',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
+  try{
+    if(!siteId){const s=await api('/sites/'+SITE_PATH_DB);siteId=s.id;}
+    const t = await token();
+    const url = `${GRAPH}/sites/${siteId}/lists/${LIST_APPROVALS}/items?$expand=fields&$filter=fields/RequestID eq ${parseInt(spId)}&$top=50`;
+    const res = await fetch(url, {headers:{Authorization:'Bearer '+t, Prefer:'HonorNonIndexedQueriesWarningMayFailRandomly'}});
+    if(!res.ok) throw new Error('결재 이력 조회 실패');
+    const data = await res.json();
+    const list = data.value.map(i=>({...i.fields, _apprId:i.id})).sort((a,b)=>(a.ApprovalOrder||0)-(b.ApprovalOrder||0));
+    if(!list.length){
+      document.getElementById('voucher-appr-history').innerHTML = '<div style="padding:12px;text-align:center;color:#a19f9d;font-size:.78rem">결재 이력이 없습니다.</div>';
+      return;
+    }
+    const html = list.map(af=>{
+      const cls = stClsMap[af.Status] || 'status-대기';
+      const stText = stLabelMap[af.Status] || af.Status || '대기';
+      return `<div class="appr-item">
+        <div>
+          <b>${af.ApprovalOrder}차 결재자(Department Head)</b>
+          <br><span style="font-size:.72rem;color:#605e5c">${af.ApproverName||''} · ${af.ApproverEmail||''}</span>
+          ${af.ApprovalDate?`<br><span style="font-size:.72rem;color:#a19f9d">${fmtDate2(af.ApprovalDate)}</span>`:''}
+          ${af.Comment?`<br><span style="font-size:.72rem;background:#fff;border:1px solid #edebe9;border-radius:4px;padding:2px 6px;display:inline-block;margin-top:2px">💬 ${af.Comment}</span>`:''}
+        </div>
+        <span class="${cls}">${stText}</span>
+      </div>`;
+    }).join('');
+    document.getElementById('voucher-appr-history').innerHTML = html;
+
+    const myEmail = (user?.username||'').toLowerCase();
+    const myPending = list.find(af=>(af.ApproverEmail||'').toLowerCase()===myEmail && af.Status==='대기');
+    const btnWrap = document.getElementById('voucher-appr-action-btns');
+    if(btnWrap){
+      btnWrap.innerHTML = myPending
+        ? `<button style="padding:8px 22px;font-size:.8rem;background:#107c10;color:#fff;border:none;border-radius:4px;cursor:pointer;margin-right:8px" onclick="showApprConfirm(${myPending._apprId},'승인',${v._spId})">✅ 승인</button>
+           <button style="padding:8px 22px;font-size:.8rem;background:#a4262c;color:#fff;border:none;border-radius:4px;cursor:pointer" onclick="showApprConfirm(${myPending._apprId},'반려',${v._spId})">❌ 반려</button>`
+        : '';
+    }
+  }catch(e){
+    console.error('loadApprovalHistory error:', e);
+    document.getElementById('voucher-appr-history').innerHTML = '<div style="padding:12px;text-align:center;color:#a19f9d;font-size:.78rem">결재 이력을 불러올 수 없습니다.</div>';
+  }
+}
+function closeDetailModal(){
+  document.getElementById('voucher-detail-modal').classList.remove('open');
+}
+
+// ── Init ──
+window.addEventListener('load',async()=>{
+  const btn=document.getElementById('btn-login');
+  const fb=setTimeout(()=>{if(btn&&btn.disabled){btn.disabled=false;btn.textContent='Hyosung M365 계정으로 로그인';}},5000);
+  try {
+    msal_g=new msal.PublicClientApplication({
+      auth:{clientId:CLIENT_ID,authority:'https://login.microsoftonline.com/'+TENANT_ID,redirectUri:location.origin+location.pathname},
+      cache:{cacheLocation:'localStorage',storeAuthStateInCookie:false}
+    });
+    await msal_g.initialize(); clearTimeout(fb);
+    const resp=await msal_g.handleRedirectPromise();
+    if(resp){msal_g.setActiveAccount(resp.account);await boot(resp.account);return;}
+    const accounts=msal_g.getAllAccounts();
+    if(accounts.length){msal_g.setActiveAccount(accounts[0]);await boot(accounts[0]);return;}
+    if(btn){btn.disabled=false;btn.textContent='Hyosung M365 계정으로 로그인';}
+  } catch(e){
+    clearTimeout(fb);
+    if(btn){btn.disabled=false;btn.textContent='Hyosung M365 계정으로 로그인';}
+    console.warn('MSAL 초기화 오류:',e.message);
+  }
+});
+</script>
+</body>
+</html>
