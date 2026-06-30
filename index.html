@@ -347,7 +347,7 @@ table.lines input:focus, table.lines select:focus { outline: none; border-color:
       </div>
       <div class="file-list" id="ltr-file-list"></div>
 
-      <div class="section-title">4. 결재라인 (Approved by Department Head)</div>
+      <div class="section-title">4. 결재라인 (Department Head → 최종 승인자)</div>
       <div id="appr-blocks-container"></div>
 
       <div class="btn-row">
@@ -467,15 +467,15 @@ const TENANT_ID = '19cab1f5-21f4-44df-8ac6-96d6ca595203';
 // (Microsoft Graph는 /lists/{id-or-name} 모두 지원) - 최초 로그인 시 ensureLists()가 자동 생성합니다.
 const LIST_REQUESTS  = 'LTR_Requests';
 const LIST_APPROVALS = 'LTR_Approvals';
-const LIST_CONFIG    = 'LTR_Config';
+const CONFIG_FILE_NAME = 'LTR-PC.json'; // STK-DB 문서 라이브러리 루트에 위치, 관리자 단가 설정 저장용
 const SITE_PATH_DB  = 'startruckkorea.sharepoint.com:/sites/STK-DB:';
 const GRAPH  = 'https://graph.microsoft.com/v1.0';
 const SCOPES = ['User.Read','Sites.ReadWrite.All','Files.ReadWrite.All'];
 
-let msal_g = null, user = null, siteId = null;
+let msal_g = null, user = null, siteId = null, _docDriveId = null;
 let lines  = [];
 let RATE_PER_KM = 450;
-let _configItemId = null;
+let GA_APPROVER = {name:'Hyejin Yun', email:'hye-jin.yun@hyosung.com'}; // system_config_final.xlsx의 LTR-PC_GA로 로그인 시 갱신됨
 
 // ── System Config (system_config_final.xlsx) - 관리자 권한/문의 이메일용 ──
 let _sysConfig = null;
@@ -506,6 +506,11 @@ async function loadSystemConfig() {
     console.warn('[Config] 로드 실패, 기본값 사용:', e.message);
     return null;
   }
+}
+function cfgVal(cfg, key, def={name:'',email:''}) {
+  if(!cfg||!cfg[key]) return def;
+  const v=cfg[key];
+  return {name:v.name||def.name, email:v.email||def.email};
 }
 function cfgEmails(cfg, keys) {
   const expanded = [];
@@ -617,26 +622,46 @@ async function ensureLists() {
     {name:'Comment', text:{allowMultipleLines:true}},
     {name:'ApprovalDate', dateTime:{displayAs:'standard', format:'dateTime'}}
   ]);
-  const created = await ensureList('LTR_Config', [
-    {name:'ConfigKey', text:{}},
-    {name:'ConfigValue', text:{}}
-  ]);
-  if(created) {
-    // 기본 단가 450원 행 생성
-    await api('/sites/'+siteId+'/lists/'+LIST_CONFIG+'/items', 'POST', {
-      fields:{Title:'RatePerKm', ConfigKey:'RatePerKm', ConfigValue:'450'}
-    });
-  }
 }
 
+// ── 유류비 단가 설정: SharePoint List가 아닌 LTR-PC.json 파일로 관리 (관리자가 저장하면 이 파일에 반영) ──
+async function getDocDriveId(){
+  if(_docDriveId) return _docDriveId;
+  if(!siteId){const s=await api('/sites/'+SITE_PATH_DB);siteId=s.id;}
+  const drivesRes = await api('/sites/'+siteId+'/drives');
+  let docDrive = (drivesRes.value||[]).find(d=>['Documents','문서','Shared Documents'].includes(d.name));
+  if(!docDrive && drivesRes.value?.length) docDrive = drivesRes.value[0];
+  _docDriveId = docDrive.id;
+  return _docDriveId;
+}
+async function writeConfigFile(obj){
+  const driveId = await getDocDriveId();
+  const t = await token();
+  const res = await fetch(GRAPH+'/drives/'+driveId+'/root:/'+CONFIG_FILE_NAME+':/content', {
+    method:'PUT',
+    headers:{Authorization:'Bearer '+t,'Content-Type':'application/json'},
+    body: JSON.stringify(obj, null, 2)
+  });
+  if(!res.ok) throw new Error('LTR-PC.json 저장 실패: '+res.status);
+}
 async function loadRateConfig() {
   try {
-    if(!siteId){const s=await api('/sites/'+SITE_PATH_DB);siteId=s.id;}
-    const data = await apiAll(`${GRAPH}/sites/${siteId}/lists/${LIST_CONFIG}/items?$expand=fields&$top=50`);
-    const row = data.value.find(i=>i.fields.ConfigKey==='RatePerKm');
-    if(row) {
-      RATE_PER_KM = parseFloat(row.fields.ConfigValue) || 450;
-      _configItemId = row.id;
+    const driveId = await getDocDriveId();
+    const t = await token();
+    const res = await fetch(GRAPH+'/drives/'+driveId+'/root:/'+CONFIG_FILE_NAME+':/content', {headers:{Authorization:'Bearer '+t}});
+    if(res.ok){
+      const text = (await res.text()).trim();
+      if(text){
+        const cfg = JSON.parse(text);
+        if(cfg.ratePerKm) RATE_PER_KM = parseFloat(cfg.ratePerKm)||450;
+        console.log('[Rate] LTR-PC.json에서 단가 로드:', RATE_PER_KM);
+      } else {
+        // 파일이 비어있으면(첨부된 빈 파일) 기본값으로 1회 채워서 저장
+        await writeConfigFile({ratePerKm:RATE_PER_KM, updatedBy:user?.username||'system', updatedAt:new Date().toISOString()});
+        console.log('[Rate] LTR-PC.json이 비어있어 기본값(450) 기록');
+      }
+    } else {
+      console.warn('[Rate] LTR-PC.json을 찾을 수 없음(상태:'+res.status+'), 기본값(450) 사용');
     }
   } catch(e) { console.warn('[Rate] 단가 설정 로드 실패, 기본값(450) 사용:', e.message); }
   document.getElementById('rate-display').textContent = RATE_PER_KM;
@@ -649,18 +674,13 @@ async function saveRate() {
   const v = parseFloat(document.getElementById('admin-rate-input').value);
   if(!v || v<=0) { alert('올바른 단가를 입력하세요.'); return; }
   try {
-    if(!siteId){const s=await api('/sites/'+SITE_PATH_DB);siteId=s.id;}
-    if(_configItemId) {
-      await api(`/sites/${siteId}/lists/${LIST_CONFIG}/items/${_configItemId}/fields`, 'PATCH', {ConfigValue: String(v)});
-    } else {
-      const r = await api(`/sites/${siteId}/lists/${LIST_CONFIG}/items`, 'POST', {fields:{Title:'RatePerKm',ConfigKey:'RatePerKm',ConfigValue:String(v)}});
-      _configItemId = r.id;
-    }
+    await writeConfigFile({ratePerKm:v, updatedBy:user?.username||'', updatedAt:new Date().toISOString()});
     RATE_PER_KM = v;
     document.getElementById('rate-display').textContent = v;
+    document.querySelectorAll('.rate-tag').forEach(el=>el.textContent=v);
     const msg = document.getElementById('rate-save-msg');
-    msg.textContent = '✔ 저장되었습니다 ('+new Date().toLocaleTimeString('ko-KR')+')';
-    setTimeout(()=>msg.textContent='', 3000);
+    msg.textContent = '✔ LTR-PC.json에 저장되었습니다 ('+new Date().toLocaleTimeString('ko-KR')+')';
+    setTimeout(()=>msg.textContent='', 4000);
     renderLines();
   } catch(e) {
     showAccAlert('단가 저장 실패', e.message, '⚠️');
@@ -685,12 +705,16 @@ async function boot(account) {
   await ensureLists().catch(e=>console.warn('[Bootstrap] ensureLists 실패:', e.message));
   await loadRateConfig();
 
-  // system_config 로드 → 관리자 권한 판별
+  // system_config 로드 → 문의 이메일 / 관리자 권한 / 2차 결재자(GA) 고정 지정
   loadSystemConfig().then(cfg=>{
     if(!cfg) { _configLoaded = true; return; }
+    const contact = cfgVal(cfg,'LTR-PC_CONTACT');
+    if(contact.email) document.getElementById('ltr-contact').textContent = '문의 Email: '+contact.email;
     const adminList = cfgEmails(cfg, ['LTR-PC_ADMIN_1']); // ADMIN_N 패턴 자동 확장
     if(adminList.length) ADMIN_EMAILS.splice(0, ADMIN_EMAILS.length, ...adminList);
+    GA_APPROVER = cfgVal(cfg, 'LTR-PC_GA', GA_APPROVER); // 2차(최종) 결재자 고정 지정
     _configLoaded = true;
+    renderApproval(); // GA 정보 반영해서 결재라인 재렌더
   }).catch(()=>{ _configLoaded = true; });
 
   checkApprovalBadge();
@@ -769,7 +793,13 @@ function renderApproval() {
     <div class="appr-info">
       <input type="text"  id="ga1-name"  readonly placeholder="이름">
       <input type="email" id="ga1-email" readonly placeholder="이메일">
-    </div></div>`;
+    </div></div>
+    <div class="appr-block appr-fixed">
+      <div class="appr-block-title">2차 결재자 <span style="font-size:10px;color:#107c10;background:#dff6dd;border-radius:10px;padding:1px 6px;margin-left:4px">자동 지정</span> <span class="hint">— 최종 승인자 (system_config: LTR-PC_GA)</span></div>
+      <div class="appr-info">
+        <input type="text"  value="${GA_APPROVER.name}"  readonly placeholder="이름">
+        <input type="email" value="${GA_APPROVER.email}" readonly placeholder="이메일">
+      </div></div>`;
 }
 function gwDeptChange(order){
   const dept=document.getElementById('ga'+order+'-dept').value;
@@ -872,18 +902,20 @@ function renderLtrFiles(){
   ).join('')+(ltrFiles.length?`<div style="font-size:11px;color:#605e5c;text-align:right;margin-top:4px">합계: ${totalMB.toFixed(2)}MB / 20MB</div>`:'');
 }
 
-function buildApprover() {
+function buildApprovers() {
   const nm=(document.getElementById('ga1-name')||{}).value||'';
   const em=(document.getElementById('ga1-email')||{}).value||'';
-  return {role:'MC', label:'Department Head (부서장)', name:nm||'TBD', email:em, order:1};
+  const result = [{role:'MC', label:'Department Head (부서장)', name:nm||'TBD', email:em, order:1}];
+  if(GA_APPROVER.email) result.push({role:'GA', label:'최종 승인자', name:GA_APPROVER.name, email:GA_APPROVER.email, order:2});
+  return result;
 }
 
 async function saveRequest(status) {
   if(!lines.length){alert('이동 내역을 1개 이상 추가하세요.');return;}
   const hasMissing = lines.some(l=>!l.date||!l.from||!l.to||!parseFloat(l.mileage));
   if(status==='대기' && hasMissing){ alert('모든 라인의 Date / From / To / Mileage(km)를 입력하세요.'); return; }
-  const approver = buildApprover();
-  if(status==='대기' && !approver.email){ alert('결재라인(부서장)을 선택하세요.'); return; }
+  const approvers = buildApprovers();
+  if(status==='대기' && !approvers[0].email){ alert('결재라인(부서장)을 선택하세요.'); return; }
 
   const {totalKm, totalKrw} = updateTotals();
   const today=new Date();
@@ -902,8 +934,8 @@ async function saveRequest(status) {
         Status: status,
         RequesterName: user?.name||'',
         RequesterEmail: user?.username||'',
-        DeptHeadName: approver.name,
-        DeptHeadEmail: approver.email,
+        DeptHeadName: approvers[0].name,
+        DeptHeadEmail: approvers[0].email,
         LinesJSON: JSON.stringify(lines),
         TotalKm: totalKm,
         TotalKRW: totalKrw,
@@ -941,18 +973,21 @@ async function saveRequest(status) {
     }
 
     if(status==='대기') {
-      await api(`/sites/${siteId}/lists/${LIST_APPROVALS}/items`, 'POST', {
-        fields: {
-          Title: voucherId+'_1',
-          RequestID: parseInt(requestId),
-          VoucherID: voucherId,
-          ApproverEmail: approver.email,
-          ApproverName: approver.name,
-          ApproverRole: approver.role,
-          ApprovalOrder: 1,
-          Status: '대기'
-        }
-      });
+      for(let i=0;i<approvers.length;i++){
+        const ap = approvers[i];
+        await api(`/sites/${siteId}/lists/${LIST_APPROVALS}/items`, 'POST', {
+          fields: {
+            Title: voucherId+'_'+(i+1),
+            RequestID: parseInt(requestId),
+            VoucherID: voucherId,
+            ApproverEmail: ap.email,
+            ApproverName: ap.name,
+            ApproverRole: ap.role,
+            ApprovalOrder: i+1,
+            Status: i===0 ? '대기' : '대기(잠김)'
+          }
+        });
+      }
     }
 
     showAccAlert('결재 요청이 완료되었습니다.', 'Title: '+voucherId);
@@ -1119,7 +1154,8 @@ async function confirmApprAction() {
   closeApprConfirm();
   await processApproval(apprId, action, reqId, comment);
 }
-// LTR-PC는 단일 결재 단계(부서장)이므로 승인 시 바로 전표를 승인완료 처리합니다.
+// LTR-PC는 2단계 결재(1차 부서장 → 2차 최종 승인자)이므로, 1차 승인 시 2차를 '대기'로 풀어주고
+// 마지막 단계까지 모두 승인되어야 전표가 승인완료됩니다. (acc_voucher와 동일 패턴)
 async function processApproval(apprId, action, reqId, comment='') {
   try {
     const t = await token();
@@ -1136,9 +1172,20 @@ async function processApproval(apprId, action, reqId, comment='') {
       Comment: comment,
       ApprovalDate: new Date().toISOString()
     });
-    await api(`/sites/${siteId}/lists/${LIST_REQUESTS}/items/${reqId}/fields`, 'PATCH', {
-      Status: action==='승인' ? '승인완료' : '반려'
-    });
+    if(action === '반려') {
+      await api(`/sites/${siteId}/lists/${LIST_REQUESTS}/items/${reqId}/fields`, 'PATCH', {Status:'반려'});
+    } else {
+      // 다음 잠긴 결재자(2차 최종 승인자)를 '대기'로 풀어줌, 없으면(=마지막 단계) 전체 승인완료
+      const allAppr = await apiAll(`${GRAPH}/sites/${siteId}/lists/${LIST_APPROVALS}/items?$expand=fields&$top=999`);
+      const next = allAppr.value
+        .filter(i=>Number(i.fields.RequestID)===Number(reqId) && (i.fields.Status||'').trim()==='대기(잠김)')
+        .sort((a,b)=>a.fields.ApprovalOrder-b.fields.ApprovalOrder);
+      if(next.length) {
+        await api(`/sites/${siteId}/lists/${LIST_APPROVALS}/items/${next[0].id}/fields`, 'PATCH', {Status:'대기'});
+      } else {
+        await api(`/sites/${siteId}/lists/${LIST_REQUESTS}/items/${reqId}/fields`, 'PATCH', {Status:'승인완료'});
+      }
+    }
     showAccAlert(action+' 처리되었습니다.', '', action==='반려'?'❌':'✅');
     closeDetailModal();
     loadApprovalQueue();
@@ -1327,8 +1374,8 @@ async function loadApprovalHistory(spId){
     || adminListCache.find(x=>x._spId===spId)
     || (approvalQueueCache.find(x=>x._voucher?._spId===spId)?._voucher);
   if(!v) return;
-  const stClsMap={'대기':'status-대기','승인':'status-승인','승인완료':'status-승인','반려':'status-반려'};
-  const stLabelMap={'대기':'대기','승인':'승인','승인완료':'승인완료','반려':'반려'};
+  const stClsMap={'대기':'status-대기','대기(잠김)':'status-대기잠김','승인':'status-승인','승인완료':'status-승인','반려':'status-반려'};
+  const stLabelMap={'대기':'대기','대기(잠김)':'대기(잠김)','승인':'승인','승인완료':'승인완료','반려':'반려'};
   const fmtDate2 = s => s ? new Date(s).toLocaleString('ko-KR',{year:'2-digit',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
   try{
     if(!siteId){const s=await api('/sites/'+SITE_PATH_DB);siteId=s.id;}
@@ -1347,7 +1394,7 @@ async function loadApprovalHistory(spId){
       const stText = stLabelMap[af.Status] || af.Status || '대기';
       return `<div class="appr-item">
         <div>
-          <b>${af.ApprovalOrder}차 결재자(Department Head)</b>
+          <b>${af.ApprovalOrder}차 결재자(${af.ApproverRole==='GA'?'최종 승인자':'Department Head'})</b>
           <br><span style="font-size:.72rem;color:#605e5c">${af.ApproverName||''} · ${af.ApproverEmail||''}</span>
           ${af.ApprovalDate?`<br><span style="font-size:.72rem;color:#a19f9d">${fmtDate2(af.ApprovalDate)}</span>`:''}
           ${af.Comment?`<br><span style="font-size:.72rem;background:#fff;border:1px solid #edebe9;border-radius:4px;padding:2px 6px;display:inline-block;margin-top:2px">💬 ${af.Comment}</span>`:''}
