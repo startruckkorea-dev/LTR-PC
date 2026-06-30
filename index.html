@@ -910,7 +910,7 @@ async function saveRequest(status) {
           try{
             const buf=await file.arrayBuffer();
             const res=await fetch(
-              GRAPH+'/drives/'+drive.id+'/root:/LTR-PC_AttachedFiles/'+voucherId+'/'+encodeURIComponent(file.name)+':/content',
+              GRAPH+'/drives/'+drive.id+'/root:/LTR_Requests_AttachedFiles/'+voucherId+'/'+encodeURIComponent(file.name)+':/content',
               {method:'PUT',headers:{Authorization:'Bearer '+t,'Content-Type':file.type||'application/octet-stream'},body:buf}
             );
             if(res.ok){
