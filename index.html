@@ -254,7 +254,7 @@ table.lines input:focus, table.lines select:focus { outline: none; border-color:
       <div class="app-title">Local Travel Reimbursement (Personal Car)</div>
       <div class="app-sub">STK 개인차량 유류비 청구 시스템</div>
       <div style="font-size:11px;color:#605e5c;margin-top:4px">
-        <div id="ltr-contact">문의 Email: jimmy.lee@hyosung.com</div>
+        <div id="ltr-contact">문의 Email: 불러오는 중...</div>
         <div id="ltr-rate-info">유류비 단가: <b id="rate-display">450</b> 원/km</div>
       </div>
     </div>
@@ -475,7 +475,7 @@ const SCOPES = ['User.Read','Sites.ReadWrite.All','Files.ReadWrite.All'];
 let msal_g = null, user = null, siteId = null, _docDriveId = null;
 let lines  = [];
 let RATE_PER_KM = 450;
-let GA_APPROVER = {name:'Hyejin Yun', email:'hye-jin.yun@hyosung.com'}; // system_config_final.xlsx의 LTR-PC_GA로 로그인 시 갱신됨
+let GA_APPROVER = {name:'', email:''}; // system_config_final.xlsx의 LTR-PC_GA 값으로 로그인 시 채워짐 (하드코딩 없음)
 
 // ── System Config (system_config_final.xlsx) - 관리자 권한/문의 이메일용 ──
 let _sysConfig = null;
@@ -795,7 +795,7 @@ function renderApproval() {
       <input type="email" id="ga1-email" readonly placeholder="이메일">
     </div></div>
     <div class="appr-block appr-fixed">
-      <div class="appr-block-title">2차 결재자 <span style="font-size:10px;color:#107c10;background:#dff6dd;border-radius:10px;padding:1px 6px;margin-left:4px">자동 지정</span> <span class="hint">— 최종 승인자 (system_config: LTR-PC_GA)</span></div>
+      <div class="appr-block-title">2차 결재자 <span style="font-size:10px;color:#107c10;background:#dff6dd;border-radius:10px;padding:1px 6px;margin-left:4px">자동 지정</span> <span class="hint">— 최종 승인자</span></div>
       <div class="appr-info">
         <input type="text"  value="${GA_APPROVER.name}"  readonly placeholder="이름">
         <input type="email" value="${GA_APPROVER.email}" readonly placeholder="이메일">
@@ -916,6 +916,10 @@ async function saveRequest(status) {
   if(status==='대기' && hasMissing){ alert('모든 라인의 Date / From / To / Mileage(km)를 입력하세요.'); return; }
   const approvers = buildApprovers();
   if(status==='대기' && !approvers[0].email){ alert('결재라인(부서장)을 선택하세요.'); return; }
+  if(status==='대기' && !approvers.find(a=>a.role==='GA')){
+    alert('2차(최종) 결재자 정보를 시스템에서 불러오지 못했습니다.\nsystem_config_final.xlsx의 LTR-PC_GA 설정을 확인하거나 관리자에게 문의해주세요.');
+    return;
+  }
 
   const {totalKm, totalKrw} = updateTotals();
   const today=new Date();
