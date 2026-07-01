@@ -1527,7 +1527,7 @@ async function loadApprovalHistory(spId){
       const stText = stLabelMap[af.Status] || af.Status || '대기';
       return `<div class="appr-item">
         <div>
-          <b>${af.ApprovalOrder}차 결재자('Department Head')</b>
+          <b>${af.ApprovalOrder}차 결재자(Department Head)</b>
           <br><span style="font-size:.72rem;color:#605e5c">${af.ApproverName||''} · ${af.ApproverEmail||''}</span>
           ${af.ApprovalDate?`<br><span style="font-size:.72rem;color:#a19f9d">${fmtDate2(af.ApprovalDate)}</span>`:''}
           ${af.Comment?`<br><span style="font-size:.72rem;background:#fff;border:1px solid #edebe9;border-radius:4px;padding:2px 6px;display:inline-block;margin-top:2px">💬 ${af.Comment}</span>`:''}
