@@ -342,14 +342,26 @@ table.lines input:focus, table.lines select:focus { outline: none; border-color:
         <span class="total-main" id="total-amt">0 km / KRW 0</span>
       </div>
 
-      <div class="section-title">3. 첨부파일 <span style="font-size:11px;font-weight:400;color:#605e5c">(NAVER 지도 캡처 등 마일리지 확인용, 선택)</span></div>
+      <div class="section-title">3. 첨부파일</div>
+      <div style="background:#fff4e5;border:1px solid #f7c948;border-radius:6px;padding:12px 16px;margin-bottom:10px">
+        <div style="display:flex;align-items:flex-start;gap:8px">
+          <span style="font-size:1.1rem;line-height:1.4">⚠️</span>
+          <div>
+            <div style="font-weight:700;color:#835c00;font-size:.82rem;margin-bottom:4px">필수 첨부 — Mandatory Attachment</div>
+            <div style="color:#7d5700;font-size:.82rem;line-height:1.6">
+              Please attach the <b>email confirmation that the Mobility Car is not available at Hiparking</b>.<br>
+              <span style="font-size:.75rem;color:#a19f9d">당시 회사 차량이 불가하다는 증빙 이메일을 반드시 첨부해 주세요.</span>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="file-area" onclick="document.getElementById('ltr-file-input').click()">
         <input type="file" id="ltr-file-input" multiple onchange="onLtrFileSelect(event)">
         <div class="hint">📎 클릭하여 파일 첨부 (최대 20MB)</div>
       </div>
       <div class="file-list" id="ltr-file-list"></div>
 
-      <div class="section-title">4. 결재라인 (Department Head → GA 담당자)</div>
+      <div class="section-title">4. 결재라인 (Department Head)</div>
       <div id="appr-blocks-container"></div>
 
       <div class="btn-row">
@@ -773,12 +785,7 @@ function renderApproval() {
       <input type="text"  id="ga1-name"  readonly placeholder="이름">
       <input type="email" id="ga1-email" readonly placeholder="이메일">
     </div></div>
-    <div class="appr-block appr-fixed">
-      <div class="appr-block-title">2차 결재자 <span style="font-size:10px;color:#107c10;background:#dff6dd;border-radius:10px;padding:1px 6px;margin-left:4px">자동 지정</span> <span class="hint">— GA 담당자</span></div>
-      <div class="appr-info">
-        <input type="text"  value="${GA_APPROVER.name}"  readonly placeholder="이름">
-        <input type="email" value="${GA_APPROVER.email}" readonly placeholder="이메일">
-      </div></div>`;
+`;
 }
 function gwDeptChange(order){
   const dept=document.getElementById('ga'+order+'-dept').value;
@@ -894,7 +901,7 @@ function buildApprovers() {
   const nm=(document.getElementById('ga1-name')||{}).value||'';
   const em=(document.getElementById('ga1-email')||{}).value||'';
   const result = [{role:'MC', label:'Department Head (부서장)', name:nm||'TBD', email:em, order:1}];
-  if(GA_APPROVER.email) result.push({role:'GA', label:'GA 담당자', name:GA_APPROVER.name, email:GA_APPROVER.email, order:2});
+  // 2차 GA 결재자 제거 — 1단계(부서장)만 운영
   return result;
 }
 
@@ -904,10 +911,7 @@ async function saveRequest(status) {
   if(status==='대기' && hasMissing){ alert('모든 라인의 Date / From / To / Mileage(km)를 입력하세요.'); return; }
   const approvers = buildApprovers();
   if(status==='대기' && !approvers[0].email){ alert('결재라인(부서장)을 선택하세요.'); return; }
-  if(status==='대기' && !approvers.find(a=>a.role==='GA')){
-    alert('2차(최종) 결재자 정보를 시스템에서 불러오지 못했습니다.\nsystem_config_final.xlsx의 LTR-PC_GA 설정을 확인하거나 관리자에게 문의해주세요.');
-    return;
-  }
+
 
   const {totalKm, totalKrw} = updateTotals();
   const today=new Date();
@@ -1154,8 +1158,7 @@ async function confirmApprAction() {
   closeApprConfirm();
   await processApproval(apprId, action, reqId, comment);
 }
-// LTR-PC는 2단계 결재(1차 부서장 → 2차 GA 담당자)이므로, 1차 승인 시 2차를 '대기'로 풀어주고
-// 마지막 단계까지 모두 승인되어야 전표가 승인완료됩니다. (acc_voucher와 동일 패턴)
+// LTR-PC는 1단계 결재(부서장)만 운영 — 승인 즉시 승인완료 처리
 async function processApproval(apprId, action, reqId, comment='') {
   try {
     const t = await token();
@@ -1175,16 +1178,8 @@ async function processApproval(apprId, action, reqId, comment='') {
     if(action === '반려') {
       await api(`/sites/${siteId}/lists/${LIST_REQUESTS}/items/${reqId}/fields`, 'PATCH', {Status:'반려'});
     } else {
-      // 다음 잠긴 결재자(2차 GA 담당자)를 '대기'로 풀어줌, 없으면(=마지막 단계) 전체 승인완료
-      const allAppr = await apiAll(`${GRAPH}/sites/${siteId}/lists/${LIST_APPROVALS}/items?$expand=fields&$top=999`);
-      const next = allAppr.value
-        .filter(i=>Number(i.fields.RequestID)===Number(reqId) && (i.fields.Status||'').trim()==='대기(잠김)')
-        .sort((a,b)=>a.fields.ApprovalOrder-b.fields.ApprovalOrder);
-      if(next.length) {
-        await api(`/sites/${siteId}/lists/${LIST_APPROVALS}/items/${next[0].id}/fields`, 'PATCH', {Status:'대기'});
-      } else {
-        await api(`/sites/${siteId}/lists/${LIST_REQUESTS}/items/${reqId}/fields`, 'PATCH', {Status:'승인완료'});
-      }
+      // 1단계 결재 — 바로 승인완료
+      await api(`/sites/${siteId}/lists/${LIST_REQUESTS}/items/${reqId}/fields`, 'PATCH', {Status:'승인완료'});
     }
     showAccAlert(action+' 처리되었습니다.', '', action==='반려'?'❌':'✅');
     closeDetailModal();
@@ -1518,7 +1513,7 @@ async function loadApprovalHistory(spId){
       const stText = stLabelMap[af.Status] || af.Status || '대기';
       return `<div class="appr-item">
         <div>
-          <b>${af.ApprovalOrder}차 결재자(${af.ApproverRole==='GA'?'GA 담당자':'Department Head'})</b>
+          <b>${af.ApprovalOrder}차 결재자('Department Head')</b>
           <br><span style="font-size:.72rem;color:#605e5c">${af.ApproverName||''} · ${af.ApproverEmail||''}</span>
           ${af.ApprovalDate?`<br><span style="font-size:.72rem;color:#a19f9d">${fmtDate2(af.ApprovalDate)}</span>`:''}
           ${af.Comment?`<br><span style="font-size:.72rem;background:#fff;border:1px solid #edebe9;border-radius:4px;padding:2px 6px;display:inline-block;margin-top:2px">💬 ${af.Comment}</span>`:''}
