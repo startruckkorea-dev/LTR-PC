@@ -256,7 +256,7 @@ table.lines input:focus, table.lines select:focus { outline: none; border-color:
       <div class="app-title">Local Travel Reimbursement (Personal Car)</div>
       <div class="app-sub">STK 개인차량 유류비 청구 시스템</div>
       <div style="font-size:11px;color:#605e5c;margin-top:4px">
-        <div id="ltr-contact">문의 Email: 불러오는 중...</div>
+        <div id="ltr-contact">BU Admin 문의 Email: 불러오는 중...</div>
         <div id="ltr-rate-info">유류비 단가: <b id="rate-display">450</b> 원/km</div>
       </div>
     </div>
@@ -700,7 +700,7 @@ async function boot(account) {
   loadSystemConfig().then(cfg=>{
     if(!cfg) { _configLoaded = true; return; }
     const contact = cfgVal(cfg,'LTR-PC_CONTACT');
-    if(contact.email) document.getElementById('ltr-contact').textContent = '문의 Email: '+contact.email;
+    if(contact.email) document.getElementById('ltr-contact').textContent = 'BU Admin 문의 Email: '+contact.email;
     const adminList = cfgEmails(cfg, ['LTR-PC_ADMIN_1']); // ADMIN_N 패턴 자동 확장
     if(adminList.length) ADMIN_EMAILS.splice(0, ADMIN_EMAILS.length, ...adminList);
     GA_APPROVER = cfgVal(cfg, 'LTR-PC_GA', GA_APPROVER); // 2차(최종) 결재자 고정 지정
