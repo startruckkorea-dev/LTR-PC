@@ -1078,8 +1078,8 @@ let approvalQueueCache = [];
 async function checkApprovalBadge(){
   if(!siteId) return;
   try{
-    const data = await apiAll(`${GRAPH}/sites/${siteId}/lists/${LIST_APPROVALS}/items?$expand=fields&$top=999`);
-    const mine = data.value.filter(i=>isMe(i.fields.ApproverEmail) && i.fields.Status==='대기');
+    const data = await apiAll(`${GRAPH}/sites/${siteId}/lists/${LIST_APPROVALS}/items?$expand=fields&$top=999&$filter=fields/Status eq '대기'`);
+    const mine = data.value.filter(i=>isMe(i.fields.ApproverEmail));
     const badge = document.getElementById('appr-badge');
     if(badge){
       if(mine.length){ badge.textContent = mine.length; badge.style.display = 'inline'; }
@@ -1093,12 +1093,12 @@ async function loadApprovalQueue() {
   if(!siteId){const s=await api('/sites/'+SITE_PATH_DB);siteId=s.id;}
   try {
     const [apprData, reqData] = await Promise.all([
-      apiAll(`${GRAPH}/sites/${siteId}/lists/${LIST_APPROVALS}/items?$expand=fields&$top=999`),
+      apiAll(`${GRAPH}/sites/${siteId}/lists/${LIST_APPROVALS}/items?$expand=fields&$top=999&$filter=fields/Status eq '대기'`),
       apiAll(`${GRAPH}/sites/${siteId}/lists/${LIST_REQUESTS}/items?$expand=fields&$top=999`)
     ]);
     const reqMap = {};
     reqData.value.forEach(r=>{ reqMap[r.id] = {...r.fields, _spId: r.id}; });
-    const myPending = apprData.value.filter(i=>isMe(i.fields.ApproverEmail) && i.fields.Status === '대기');
+    const myPending = apprData.value.filter(i=>isMe(i.fields.ApproverEmail));
     approvalQueueCache = myPending.map(item=>({
       _apprId: item.id,
       ...item.fields,
