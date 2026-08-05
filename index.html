@@ -669,7 +669,7 @@ async function saveRate() {
     document.getElementById('rate-display').textContent = v;
     document.querySelectorAll('.rate-tag').forEach(el=>el.textContent=v);
     const msg = document.getElementById('rate-save-msg');
-    msg.textContent = '✔ LTR-PC.json에 저장되었습니다 ('+new Date().toLocaleTimeString('ko-KR')+')';
+    msg.textContent = '✔ LTR-PC.json에 저장되었습니다 ('+new Date().toLocaleTimeString('ko-KR',{timeZone:'Asia/Seoul'})+')';
     setTimeout(()=>msg.textContent='', 4000);
     renderLines();
   } catch(e) {
@@ -1039,9 +1039,9 @@ const stLabel={'대기':'대기','대기(잠김)':'대기(잠김)','승인완료
 const fmtK=n=>Math.round(n||0).toLocaleString('ko-KR');
 const fmtDate = s => {
   if(!s) return '-';
-  const d = new Date(s);
+  const d = new Date(new Date(s).getTime()+9*3600*1000);
   const p = n=>String(n).padStart(2,'0');
-  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+  return `${d.getUTCFullYear()}-${p(d.getUTCMonth()+1)}-${p(d.getUTCDate())} ${p(d.getUTCHours())}:${p(d.getUTCMinutes())}`;
 };
 function renderList(){
   const fs=document.getElementById('f-status')?.value||'';
@@ -1254,7 +1254,7 @@ async function exportAdminExcel(){
     let maxStep = 0;
     items.forEach(i=>{ const n=(apprMap[String(i.id)]||[]).length; if(n>maxStep) maxStep=n; });
 
-    const fmtX = s => { if(!s) return ''; const d=new Date(s); const p=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; };
+    const fmtX = s => { if(!s) return ''; const d=new Date(new Date(s).getTime()+9*3600*1000); const p=n=>String(n).padStart(2,'0'); return `${d.getUTCFullYear()}-${p(d.getUTCMonth()+1)}-${p(d.getUTCDate())} ${p(d.getUTCHours())}:${p(d.getUTCMinutes())}`; };
 
     const headers = ['번호','신청자','Title','Department Head','총 거리(km)','Total(KRW)','상태','신청일'];
     for(let s=1;s<=maxStep;s++){
@@ -1560,7 +1560,7 @@ async function exportModalPdf() {
     // ── 1. 결재 내용 캡처 (html2canvas → 이미지) ──
     const contentEl = document.getElementById('voucher-detail-content');
     const _bannerNow = new Date();
-    const _ds = '출력일시: ' + _bannerNow.toLocaleDateString('ko-KR') + ' ' + _bannerNow.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+    const _ds = '출력일시: ' + _bannerNow.toLocaleDateString('ko-KR',{timeZone:'Asia/Seoul'}) + ' ' + _bannerNow.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Seoul'});
 
     const btnWrap = document.getElementById('voucher-appr-action-btns');
     if(btnWrap) btnWrap.style.display = 'none';
