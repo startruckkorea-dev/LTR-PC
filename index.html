@@ -1698,7 +1698,7 @@ async function exportModalPdf() {
     const finalBlob = new Blob([finalBytes], {type:'application/pdf'});
     const _f = window._currentDetailFields;
     const reqEmail = (_f?.RequesterEmail||'unknown').replace(/[^a-z0-9]/gi,'_');
-    const saveFileName = 'LTR-PC_'+(window._currentDetailId||'req')+'_'+reqEmail+'_'+new Date().toISOString().substring(0,10)+'.pdf';
+    const saveFileName = 'LTR-PC_'+(window._currentDetailId||'req')+'_'+reqEmail+'_'+new Date(new Date().getTime()+9*3600*1000).toISOString().substring(0,10)+'.pdf';
     const a = document.createElement('a');
     a.href = URL.createObjectURL(finalBlob);
     a.download = saveFileName;
