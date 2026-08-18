@@ -1391,7 +1391,13 @@ async function openVoucherSP(spId){
   catch(e) { console.error('[openVoucherSP] LinesJSON 파싱 실패:', e.message); }
 
   const row = (label, value) => `<div class="det-row"><div class="det-lbl">${label}</div><div class="det-val">${value||'-'}</div></div>`;
-  const submittedDate = v.SubmittedDate ? new Date(v.SubmittedDate).toLocaleString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}) : '-';
+  // PC 시간대와 무관하게 항상 KST로 표시한다(+9h 보정 후 UTC 게터로 읽기).
+  const submittedDate = (() => {
+    if(!v.SubmittedDate) return '-';
+    const d = new Date(new Date(v.SubmittedDate).getTime()+9*3600*1000);
+    const p = n=>String(n).padStart(2,'0');
+    return `${d.getUTCFullYear()}-${p(d.getUTCMonth()+1)}-${p(d.getUTCDate())} ${p(d.getUTCHours())}:${p(d.getUTCMinutes())}`;
+  })();
 
   const lineRows = lines_data.map((l,i)=>{
     const total = calcLineTotal(l.mileage);
@@ -1507,7 +1513,13 @@ async function loadApprovalHistory(spId){
   if(!v) return;
   const stClsMap={'대기':'status-대기','대기(잠김)':'status-대기잠김','승인':'status-승인','승인완료':'status-승인','반려':'status-반려','철회(잠김)':'status-대기잠김','철회':'status-반려'};
   const stLabelMap={'대기':'대기','대기(잠김)':'대기(잠김)','승인':'승인','승인완료':'승인완료','반려':'반려','철회(잠김)':'철회(잠김)','철회':'철회'};
-  const fmtDate2 = s => s ? new Date(s).toLocaleString('ko-KR',{year:'2-digit',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}) : '';
+  // PC 시간대와 무관하게 항상 KST로 표시한다(+9h 보정 후 UTC 게터로 읽기).
+  const fmtDate2 = s => {
+    if(!s) return '';
+    const d = new Date(new Date(s).getTime()+9*3600*1000);
+    const p = n=>String(n).padStart(2,'0');
+    return `${d.getUTCFullYear()}-${p(d.getUTCMonth()+1)}-${p(d.getUTCDate())} ${p(d.getUTCHours())}:${p(d.getUTCMinutes())}`;
+  };
   try{
     if(!siteId){const s=await api('/sites/'+SITE_PATH_DB);siteId=s.id;}
     const t = await token();
