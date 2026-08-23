@@ -541,6 +541,31 @@ async function loadSystemConfig() {
     return null;
   }
 }
+// 결재 의견 등 사용자 자유 입력은 화면에 넣기 전에 반드시 이스케이프한다.
+// SharePoint 다중 텍스트는 <div class="ExternalClass…"> 래퍼가 붙어 저장되므로
+// 래퍼를 걷어낸 뒤(spText) 이스케이프한다. mc 에서 검증된 구현을 그대로 사용.
+function escHtml(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function spText(s){
+  return String(s == null ? '' : s)
+    .replace(/<\s*br\s*\/?>/gi, '\n')
+    .replace(/<\/\s*(div|p|li|tr)\s*>/gi, '\n')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+    .replace(/&#(\d+);/g, (m, d) => { const n = parseInt(d, 10); return (n>=32 && n<=1114111) ? String.fromCodePoint(n) : m; })
+    .replace(/&#x([0-9a-fA-F]+);/g, (m, x) => { const n = parseInt(x, 16); return (n>=32 && n<=1114111) ? String.fromCodePoint(n) : m; })
+    .replace(/&amp;/g, '&')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+// 화면 출력용 — 래퍼 제거 후 이스케이프
+function safeText(s){ return escHtml(spText(s)); }
+
 function cfgVal(cfg, key, def={name:'',email:''}) {
   if(!cfg||!cfg[key]) return def;
   const v=cfg[key];
@@ -582,11 +607,28 @@ async function token() {
     throw e;
   }
 }
-async function api(path,method='GET',body=null) {
+async function api(path,method='GET',body=null,_retry=0) {
   const t=await token();
   const opts={method,headers:{Authorization:'Bearer '+t,'Content-Type':'application/json',Prefer:'HonorNonIndexedQueriesWarningMayFailRandomly'}};
   if(body) opts.body=JSON.stringify(body);
   const res=await fetch(GRAPH+path,opts);
+  // SharePoint 스로틀(429)·일시 장애(503/504)는 잠시 뒤 다시 시도한다.
+  // 재시도가 없으면 신청처럼 "생성 → 조회 → PATCH"로 이어지는 작업이 중간에 끊겨
+  // 신청서만 남고 결재선이 없는 상태가 된다(2026-08 ACC/GW 사례).
+  // 503/504는 요청이 이미 처리되고 응답만 유실된 경우일 수 있어 POST는 재시도하지 않는다.
+  // 다시 보내면 신청서나 결재선 행이 두 번 만들어지기 때문이다.
+  // 429(스로틀)는 처리되지 않은 것이 확실하므로 메서드와 무관하게 재시도한다.
+  const _idem = method === 'GET' || method === 'PATCH' || method === 'DELETE';
+  if(!res.ok && (res.status === 429 || (_idem && [503,504].includes(res.status))) && _retry < 3) {
+    const _ra = parseInt(res.headers.get('Retry-After')||'0',10);
+    const _wait = _ra>0 ? _ra*1000 : Math.pow(2,_retry)*800;   // 0.8s -> 1.6s -> 3.2s
+    console.warn('[API] '+res.status+' 재시도 '+(_retry+1)+'/3 ('+_wait+'ms 후): '+method+' '+path.slice(0,60));
+    await new Promise(r=>setTimeout(r,_wait));
+    return api(path,method,body,_retry+1);
+  }
+  if(!res.ok && [503,504].includes(res.status) && !_idem){
+    console.warn('[API] '+res.status+' — '+method+' 는 중복 생성 방지를 위해 재시도하지 않습니다: '+path.slice(0,60));
+  }
   if(!res.ok) throw new Error((await res.json()).error?.message||res.status);
   return method==='DELETE'?null:res.json();
 }
@@ -1540,7 +1582,7 @@ async function loadApprovalHistory(spId){
           <b>${af.ApprovalOrder}차 결재자(Department Head)</b>
           <br><span style="font-size:.72rem;color:#605e5c">${af.ApproverName||''} · ${af.ApproverEmail||''}</span>
           ${af.ApprovalDate?`<br><span style="font-size:.72rem;color:#a19f9d">${fmtDate2(af.ApprovalDate)}</span>`:''}
-          ${af.Comment?`<br><span style="font-size:.72rem;background:#fff;border:1px solid #edebe9;border-radius:4px;padding:2px 6px;display:inline-block;margin-top:2px">💬 ${af.Comment}</span>`:''}
+          ${af.Comment?`<br><span style="font-size:.72rem;background:#fff;border:1px solid #edebe9;border-radius:4px;padding:2px 6px;display:inline-block;margin-top:2px">💬 ${safeText(af.Comment)}</span>`:''}
         </div>
         <span class="${cls}">${stText}</span>
       </div>`;
