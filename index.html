@@ -1454,7 +1454,8 @@ async function openVoucherSP(spId){
     </tr>`;
   }).join('');
 
-  let attHtml = '<span style="color:#a19f9d">첨부파일 없음</span>';
+  // 첨부가 없을 때는 「결재 이력이 없습니다.」와 같은 규칙(가운데 정렬 · 패딩)으로 표시한다.
+  let attHtml = '<div style="padding:12px;text-align:center;color:#a19f9d;font-size:.78rem">첨부파일이 없습니다.</div>';
   if(v.AttachmentRef) {
     const items = v.AttachmentRef.split(';').filter(Boolean);
     attHtml = items.map(it=>{
