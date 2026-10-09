@@ -474,10 +474,22 @@ html, * { scrollbar-width: thin; scrollbar-color: #CBD5E1 transparent; }
 ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 8px; border: 2px solid transparent; background-clip: padding-box; }
 ::-webkit-scrollbar-thumb:hover { background: #94A3B8; background-clip: padding-box; }
 </style><style id="aps-mobile">
-/* APS 모바일(10-09 · aps-mobile) — 767px 이하 전용. 웹 화면 무변경 */
+/* APS 모바일(10-09 · aps-mobile · 10-10 2차 점검) — 767px 이하 전용. 웹 화면 무변경 */
 /* LTR-PC: 내 신청 목록 표(min-width 800px)가 감싸는 상자 없이 카드에 바로 있어 문서가 1,110px 로 넘치던 것 · 작성 탭 452px 넘침(긴 첨부 파일명) 해소.
    상세 모달은 PDF 출력이 html2canvas windowWidth 700 으로 다시 그리므로 상세 규칙은 699px 이하에만 둔다(PDF 결과 무변경). */
-@media (max-width: 767px) {
+@media screen and (max-width: 767px) {
+  /* ── 2차 방어 규칙(iPhone Safari · Galaxy): 글자 자동 확대 끔 · 입력칸이 부모보다 넓어지지 않게 · iOS 날짜 칸 높이/정렬 ── */
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  input, select, textarea, button { max-width: 100%; box-sizing: border-box; }
+  input[type=date], input[type=time], input[type=month], input[type=datetime-local] { min-width: 0; }
+  #app .form-group > select, .appr-select-row select { height: 38px; min-height: 38px; }   /* iOS 기본 select 높이를 입력칸과 같게 — 모양은 그대로 */
+  .list-filters select, .list-filters input, #admin-status, #admin-search { height: 38px; min-height: 38px; }   /* 목록 · 관리자 필터: 선택 · 검색칸 같은 높이 */
+  @supports (-webkit-touch-callout: none) {   /* iOS Safari 에서만 */
+    input[type=date], input[type=time], input[type=month], input[type=datetime-local] { -webkit-appearance: none; appearance: none; display: block; min-height: 38px; line-height: normal; text-align: left; }
+    table.lines input[type=date] { min-height: 34px; }
+    input::-webkit-date-and-time-value { text-align: left; min-height: 1.2em; }
+  }
+
   /* ── 바탕 · 카드 ── */
   #app { padding: 12px 12px 32px; }
   #app .card { padding: 16px 14px; margin-bottom: 12px; }
@@ -515,9 +527,10 @@ html, * { scrollbar-width: thin; scrollbar-color: #CBD5E1 transparent; }
   #tab-new .section-title[style*="space-between"] > span { flex: 1 1 100%; }
   #tab-new .section-title .btn-add { flex: 1 1 100%; min-height: 38px; }
   .lines-scroll { -webkit-overflow-scrolling: touch; }
-  table.lines { min-width: 820px; }
+  table.lines { min-width: 920px; }   /* 2차: 입력 16px 에서 From · To 칸(84px)에 「평택 PDI 센터」 도 잘리던 것 → 웹(1024px)과 같은 글자 수가 보이게 */
   table.lines th:nth-child(2) { width: 160px !important; }
-  table.lines input { padding: 6px 8px !important; }
+  table.lines th:nth-child(6) { width: 96px !important; }   /* Mileage(km) — 「1234.5」 까지 잘리지 않게 */
+  table.lines input { padding: 6px 8px !important; height: 34px; }   /* 2차: 한 줄의 날짜(35px) · 글자(32px) 칸 높이를 34px 로 맞춤 */
   .totals-bar { justify-content: center; padding: 12px; }
 
   /* 3. 첨부파일 — 긴 파일명이 ✕ 단추를 밀어내지 않게 */
