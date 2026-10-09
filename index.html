@@ -473,7 +473,115 @@ html, * { scrollbar-width: thin; scrollbar-color: #CBD5E1 transparent; }
 ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 8px; border: 2px solid transparent; background-clip: padding-box; }
 ::-webkit-scrollbar-thumb:hover { background: #94A3B8; background-clip: padding-box; }
-</style></head>
+</style><style id="aps-mobile">
+/* APS 모바일(10-09 · aps-mobile) — 767px 이하 전용. 웹 화면 무변경 */
+/* LTR-PC: 내 신청 목록 표(min-width 800px)가 감싸는 상자 없이 카드에 바로 있어 문서가 1,110px 로 넘치던 것 · 작성 탭 452px 넘침(긴 첨부 파일명) 해소.
+   상세 모달은 PDF 출력이 html2canvas windowWidth 700 으로 다시 그리므로 상세 규칙은 699px 이하에만 둔다(PDF 결과 무변경). */
+@media (max-width: 767px) {
+  /* ── 바탕 · 카드 ── */
+  #app { padding: 12px 12px 32px; }
+  #app .card { padding: 16px 14px; margin-bottom: 12px; }
+  #app .card-title { margin-bottom: 14px; }
+  #app .section-title { margin: 16px 0 10px; }
+
+  /* ── 헤더(V3) — 띠 한 줄 · 제목 한 단계 작게 · BU Admin 메일 줄바꿈 허용 ── */
+  #app .app-header.aps-hdr { padding: 0 16px 14px; margin-bottom: 12px; }
+  #app .aps-band { margin: 0 -16px 10px; padding: 0 16px; }
+  @media (min-width: 641px) { #app .aps-band { flex-basis: calc(100% + 32px); } }   /* 641~767px 은 가로 배치 — 띠 폭을 줄어든 좌우 패딩에 맞춤 */
+  .aps-band-crumb { flex: 1 1 auto; }
+  .aps-band-crumb > span { overflow: hidden; text-overflow: ellipsis; }
+  #app .app-title { font-size: 1rem; line-height: 1.35; }
+  #app .app-sub { font-size: .7rem; }
+  .aps-hdr .hdr-contact { display: grid; grid-template-columns: max-content minmax(0, 1fr); font-size: 11px; }
+  .aps-hdr .hdr-contact-mail { overflow-wrap: anywhere; min-width: 0; }
+  #ltr-rate-info { margin-top: 2px; }
+
+  /* ── 탭 — 한 줄 가로 스크롤(막대 숨김) · 터치 높이 42px ── */
+  #app .tabs { flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; margin: 0 -12px 12px; padding: 0 12px;
+    scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  #app .tabs::-webkit-scrollbar { display: none; }
+  #app .tab-btn { flex: none; white-space: nowrap; min-height: 42px; padding: 10px 14px; font-size: 13.5px; }
+
+  /* ── 입력 글자 16px(iOS 자동 확대 방지) — 인라인 글자 크기를 이긴다 ── */
+  input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]):not([type=color]),
+  select, textarea { font-size: 16px !important; }
+
+  /* ── 작성 탭 — 1열 · 라벨 위 · 입력 아래 ── */
+  #app .form-row, #app .form-row.three, #app .form-row.four { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  #app .form-group > input, #app .form-group > select, #app .form-group > textarea { width: 100%; min-width: 0; }
+
+  /* 2. 이동 내역 — 제목 아래로 「＋ 라인 추가」 한 줄, 표는 상자 안에서만 가로 스크롤(입력 16px 이라 표 최소 폭을 넓힘) */
+  #tab-new .section-title[style*="space-between"] { flex-wrap: wrap; gap: 8px; }
+  #tab-new .section-title[style*="space-between"] > span { flex: 1 1 100%; }
+  #tab-new .section-title .btn-add { flex: 1 1 100%; min-height: 38px; }
+  .lines-scroll { -webkit-overflow-scrolling: touch; }
+  table.lines { min-width: 820px; }
+  table.lines th:nth-child(2) { width: 160px !important; }
+  table.lines input { padding: 6px 8px !important; }
+  .totals-bar { justify-content: center; padding: 12px; }
+
+  /* 3. 첨부파일 — 긴 파일명이 ✕ 단추를 밀어내지 않게 */
+  .file-area { padding: 16px 12px; }
+  .file-item { gap: 8px; padding: 8px 10px; }
+  .file-item > span { min-width: 0; overflow-wrap: anywhere; }
+  .file-item > button { flex: none; min-width: 32px; min-height: 32px; }
+
+  /* 4. 결재 라인 · 단추 */
+  .appr-block { padding: 12px; }
+  .appr-info { grid-template-columns: minmax(0, 1fr); }
+  .appr-info input { width: 100%; min-width: 0; }
+  .btn-row { gap: 10px; }
+  .btn-row > button { flex: 1 1 0; min-height: 44px; padding: 10px 8px; white-space: nowrap; }
+
+  /* ── 내 신청 목록 — 표를 상자로 만들어 그 안에서만 가로 스크롤 · 필터 줄바꿈 ── */
+  #tab-list .card > div[style*="space-between"] { margin-bottom: 10px !important; }
+  #tab-list .list-table { display: block; min-width: 0; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .list-filters select { flex: 1 1 100%; min-width: 0; }
+  .list-filters input { flex: 1 1 100%; min-width: 0 !important; }
+
+  /* ── 결재함 · 관리자 — 표는 카드 상자 안에서 가로 스크롤(기존) · 필터 줄은 줄바꿈 ── */
+  #tab-appr > .card, #tab-admin > .card { -webkit-overflow-scrolling: touch; }
+  #tab-admin > .card > div[style*="display:flex"] { flex-wrap: wrap; gap: 8px !important; }
+  #admin-rate-input { flex: 1 1 120px; width: auto !important; min-width: 0; }
+  #tab-admin > .card > div[style*="display:flex"] > button { min-height: 40px; }
+  #tab-admin > div[style*="flex-wrap:wrap"] { gap: 8px !important; }
+  #admin-status { flex: 1 1 100%; min-width: 0; }
+  #admin-search { flex: 1 1 100%; min-width: 0 !important; }
+  #tab-admin > div[style*="flex-wrap:wrap"] > div[style*="margin-left:auto"] { margin-left: 0 !important; width: 100%; justify-content: space-between; }
+  #tab-admin > div[style*="flex-wrap:wrap"] > div[style*="margin-left:auto"] > button { min-height: 38px; }
+
+  /* ── 상세 모달 — 699px 이하만(PDF 출력 폭 700px 에서는 변경 전과 같은 배치) ── */
+  @media (max-width: 699px) {
+    #voucher-detail-modal .modal-box { width: calc(100% - 20px); max-width: none; max-height: 90vh; max-height: 90dvh; padding: 18px 14px 20px; border-radius: 12px; overscroll-behavior: contain; }
+    #voucher-detail-modal .modal-close { top: 8px; right: 6px; width: 36px; height: 36px; color: #605e5c; }   /* 기존 규칙 순서 탓에 흰 글자라 보이지 않던 닫기(×)를 회색으로 */
+    #voucher-detail-modal .modal-title { flex-wrap: wrap; row-gap: 10px; font-size: .95rem; padding-right: 34px; }
+    #voucher-detail-modal .modal-title > span { flex: 1 1 auto; }
+    #voucher-detail-content .det-row { gap: 8px; }
+    #voucher-detail-content .det-lbl { width: 84px; font-size: .76rem; }
+    #voucher-detail-content .det-val { min-width: 0; overflow-wrap: anywhere; }
+    #voucher-detail-content a { overflow-wrap: anywhere; }
+    #voucher-detail-content > div[style*="justify-content:flex-end"] { flex-wrap: wrap; row-gap: 2px; }
+    #voucher-detail-content .appr-item > div:first-child { min-width: 0; overflow-wrap: anywhere; }
+    #voucher-detail-content .appr-item > span:last-child { flex: none; white-space: nowrap; }
+    #voucher-detail-content .modal-action { position: sticky; bottom: -20px; z-index: 1; margin: 18px -14px -20px; padding: 12px 14px 16px; background: #fff; border-top: 1px solid #f1f5f9; }
+    #voucher-detail-content .modal-action .btn-approve, #voucher-detail-content .modal-action .btn-reject { min-height: 46px; }
+  }
+
+  /* ── 그 밖의 팝업 — 좌우 10px 여백 · 화면 안 · 단추 반씩 ── */
+  #acc-alert-modal > div, #appr-confirm-modal > div, #no-auth-modal > div { width: calc(100% - 20px) !important; max-height: 90vh; max-height: 90dvh; overflow-y: auto; }
+  #acc-alert-modal > div { padding: 24px 18px !important; }
+  #appr-confirm-modal > div { padding: 20px 16px !important; }
+  #appr-confirm-modal > div > div:last-child > button { flex: 1 1 0; min-height: 44px; }
+  #no-auth-modal > div { padding: 28px 20px !important; }
+
+  /* ── 로그인 — 카드는 화면 폭에 맞추고 안내 띠는 카드 아래(겹침 없음) ── */
+  #login-screen { flex-direction: column; padding: 24px 12px 0; }
+  #login-screen .login-card { margin: auto 0; padding: 36px 22px 28px; border-radius: 16px; }
+  #login-screen .login-page-footer { position: static; align-self: stretch; margin: 24px -12px 0; padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    flex-direction: column; gap: 2px; text-align: center; font-size: 10px; line-height: 1.45; }
+}
+</style>
+</head>
 <body>
 
 <div id="login-screen">
