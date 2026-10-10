@@ -953,6 +953,7 @@ let msal_g = null, user = null, siteId = null, _docDriveId = null;
 let _aacLoaded = false;   // 위임(AAC) 을 한 번 읽었는지 — boot 또는 처리함에서 먼저 읽은 쪽이 켠다
 let lines  = [];
 let RATE_PER_KM = 450;
+let _rateCfg = null;   // LTR-PC.json 내용 — 상세에서 신청 당시 기준 단가(history)를 찾을 때 쓴다(10-10)
 let GA_APPROVER = {name:'', email:''}; // system_config_final.xlsx의 LTR-PC_GA 값으로 로그인 시 채워짐 (하드코딩 없음)
 
 // ── System Config (system_config_final.xlsx) - 관리자 권한/문의 이메일용 ──
@@ -1010,6 +1011,8 @@ function spText(s){
 }
 // 화면 출력용 — 래퍼 제거 후 이스케이프
 function safeText(s){ return escHtml(spText(s)); }
+// 목록 · 버튼 onclick 에 넣는 번호 — SharePoint 항목 id · RequestID 는 숫자다. 다른 글자가 섞여 와도 따옴표를 깨지 못하게 숫자 · 영문만 남긴다(10-10)
+function _idq(v){ return String(v==null?'':v).replace(/[^0-9A-Za-z_-]/g,''); }
 
 function cfgVal(cfg, key, def={name:'',email:''}) {
   if(!cfg||!cfg[key]) return def;
@@ -1278,7 +1281,44 @@ async function getDocDriveId(){
   _docDriveId = docDrive.id;
   return _docDriveId;
 }
+/* 단가 파일 쓰기 전 관리자 재확인(10-10) — 관리자 탭은 화면에서만 막혀 있어(switchTab) 콘솔에서 saveRate() · writeConfigFile() 을
+   부르면 Files.ReadWrite.All 을 가진 누구나 단가를 바꿀 수 있었다. 설정(system_config_final.xlsx · LTR-PC_ADMIN_N)을 다시 판정해
+   명단에 있을 때만 쓴다. 설정을 못 읽거나 명단이 비면 쓰지 않는다(닫힌 쪽). 화면 전역(ADMIN_EMAILS)이 아니라 설정에서 다시 계산한다. */
+async function ltrIsAdminNow(){
+  if(!user) return false;
+  let cfg = null;
+  try { cfg = await loadSystemConfig(); } catch(e){ cfg = null; }
+  if(!cfg) return false;
+  const admins = cfgEmails(cfg, ['LTR-PC_ADMIN_1']).map(e=>String(e).trim().toLowerCase()).filter(Boolean);
+  const me = [user.username, user.email].map(s=>String(s||'').trim().toLowerCase()).filter(Boolean);
+  return admins.some(e=>me.includes(e));
+}
+// 이전 값 이력 — 신청 당시 기준 단가를 찾는 데 쓴다. 이력이 없던 파일은 지금 값(updatedAt 부터)을 첫 이력으로 본다
+function rateHistoryOf(cfg){
+  if(cfg && Array.isArray(cfg.history) && cfg.history.length) return cfg.history.filter(x=>x && Number(x.ratePerKm)>0).map(x=>({ratePerKm:Number(x.ratePerKm), from:x.from||null, by:x.by||''}));
+  if(cfg && Number(cfg.ratePerKm)>0) return [{ratePerKm:Number(cfg.ratePerKm), from:cfg.updatedAt||null, by:cfg.updatedBy||''}];
+  return [];
+}
+// 신청 시각(iso)에 쓰였어야 할 기준 단가 — 모르면 null(판정 안 함)
+function ltrOfficialRateAt(iso){
+  const t = Date.parse(iso||''); if(isNaN(t)) return null;
+  let r = null;
+  rateHistoryOf(_rateCfg).filter(x=>!isNaN(Date.parse(x.from||''))).sort((a,b)=>Date.parse(a.from)-Date.parse(b.from))
+    .forEach(x=>{ if(Date.parse(x.from)<=t) r = x.ratePerKm; });
+  return r;
+}
+async function readRateFile(){
+  try {
+    const driveId = await getDocDriveId();
+    const t = await token();
+    const res = await fetch(GRAPH+'/drives/'+driveId+'/root:/'+CONFIG_FILE_NAME+':/content', {headers:{Authorization:'Bearer '+t}});
+    if(!res.ok) return null;
+    const text = (await res.text()).trim();
+    return text ? JSON.parse(text) : null;
+  } catch(e){ return null; }
+}
 async function writeConfigFile(obj){
+  if(!(await ltrIsAdminNow())){ const er = new Error('관리자만 유류비 단가를 저장할 수 있습니다.'); er.code = 'NOT_ADMIN'; throw er; }
   const driveId = await getDocDriveId();
   const t = await token();
   const res = await fetch(GRAPH+'/drives/'+driveId+'/root:/'+CONFIG_FILE_NAME+':/content', {
@@ -1297,12 +1337,16 @@ async function loadRateConfig() {
       const text = (await res.text()).trim();
       if(text){
         const cfg = JSON.parse(text);
+        _rateCfg = cfg;
         if(cfg.ratePerKm) RATE_PER_KM = parseFloat(cfg.ratePerKm)||450;
         console.log('[Rate] LTR-PC.json에서 단가 로드:', RATE_PER_KM);
       } else {
-        // 파일이 비어있으면(첨부된 빈 파일) 기본값으로 1회 채워서 저장
-        await writeConfigFile({ratePerKm:RATE_PER_KM, updatedBy:user?.username||'system', updatedAt:new Date().toISOString()});
-        console.log('[Rate] LTR-PC.json이 비어있어 기본값(450) 기록');
+        // 파일이 비어있으면(첨부된 빈 파일) 기본값으로 1회 채워서 저장 — 관리자가 열 때만(10-10: 쓰기는 관리자 재확인)
+        try {
+          const _init = {ratePerKm:RATE_PER_KM, updatedBy:user?.username||'system', updatedAt:new Date().toISOString()};
+          await writeConfigFile(_init); _rateCfg = _init;
+          console.log('[Rate] LTR-PC.json이 비어있어 기본값(450) 기록');
+        } catch(we){ console.warn('[Rate] 기본값 기록 생략:', we.message); }
       }
     } else {
       console.warn('[Rate] LTR-PC.json을 찾을 수 없음(상태:'+res.status+'), 기본값(450) 사용');
@@ -1318,7 +1362,14 @@ async function saveRate() {
   const v = parseFloat(document.getElementById('admin-rate-input').value);
   if(!v || v<=0) { alert('올바른 단가를 입력하세요.'); return; }
   try {
-    await writeConfigFile({ratePerKm:v, updatedBy:user?.username||'', updatedAt:new Date().toISOString()});
+    // 이전 값을 history 로 남긴다 — 지난 신청의 당시 기준 단가 확인용(10-10). 다른 관리자가 바꿨을 수 있어 파일을 다시 읽는다
+    const prev = (await readRateFile()) || _rateCfg;
+    const now = new Date().toISOString();
+    const hist = rateHistoryOf(prev); hist.push({ratePerKm:v, from:now, by:user?.username||''});
+    const obj = {ratePerKm:v, updatedBy:user?.username||'', updatedAt:now, history:hist.slice(-100)};
+    await writeConfigFile(obj);   // 관리자 재확인은 writeConfigFile 안에서
+    _rateCfg = obj;
+    try { logAction('LTR-PC', '단가 변경', { from: (prev && prev.ratePerKm) || RATE_PER_KM, to: v }); } catch(le){}
     RATE_PER_KM = v;
     document.getElementById('rate-display').textContent = v;
     document.querySelectorAll('.rate-tag').forEach(el=>el.textContent=v);
@@ -1327,6 +1378,7 @@ async function saveRate() {
     setTimeout(()=>msg.textContent='', 4000);
     renderLines();
   } catch(e) {
+    if(e && e.code==='NOT_ADMIN'){ try { logAction('LTR-PC', '단가 변경 차단', { reason: '관리자 명단에 없음', to: v }); } catch(le){} }
     showAccAlert('단가 저장 실패', e.message, '⚠️');
   }
 }
@@ -1547,7 +1599,7 @@ function switchTab(tab) {
 function renderApproval() {
   const container = document.getElementById('appr-blocks-container');
   const depts=[...new Set((window._employeeData||[]).map(e=>e.dept))].filter(Boolean).sort();
-  const deptOpts=depts.map(d=>`<option value="${d}">${d}</option>`).join('');
+  const deptOpts=depts.map(d=>`<option value="${escHtml(d)}">${escHtml(d)}</option>`).join('');
   container.innerHTML = `<div class="appr-block appr-fixed appr-flex">
     <div class="appr-block-title">1차 결재자 <span class="req-mark">*</span><span class="appr-tag flex">Flex 연동</span> <span class="hint">— Department Head (부서장)</span></div>
     <div class="appr-select-row" style="display:none">
@@ -1569,7 +1621,7 @@ function gwDeptChange(order){
   document.getElementById('ga'+order+'-name').value='';
   document.getElementById('ga'+order+'-email').value='';
   const teams=[...new Set((window._employeeData||[]).filter(e=>e.dept===dept).map(e=>e.team))].sort();
-  tSel.innerHTML='<option value="">팀</option>'+teams.map(t=>`<option value="${t}">${t}</option>`).join('');
+  tSel.innerHTML='<option value="">팀</option>'+teams.map(t=>`<option value="${escHtml(t)}">${escHtml(t)}</option>`).join('');
   tSel.disabled=!dept; pSel.innerHTML='<option value="">직원 선택</option>'; pSel.disabled=true;
 }
 function gwTeamChange(order){
@@ -1579,7 +1631,7 @@ function gwTeamChange(order){
   document.getElementById('ga'+order+'-name').value='';
   document.getElementById('ga'+order+'-email').value='';
   const persons=(window._employeeData||[]).filter(e=>e.dept===dept&&e.team===team);
-  pSel.innerHTML='<option value="">직원 선택</option>'+persons.map(p=>`<option value="${p.email}">${p.name}</option>`).join('');
+  pSel.innerHTML='<option value="">직원 선택</option>'+persons.map(p=>`<option value="${escHtml(p.email)}">${escHtml(p.name)}</option>`).join('');
   pSel.disabled=!team;
 }
 function gwPersonChange(order){
@@ -1596,6 +1648,56 @@ function addLine() {
 }
 function deleteLine(i) { lines.splice(i,1); renderLines(); }
 
+/* ══ 유류비 금액 재검증(10-10) ══
+   단가(LTR-PC.json)와 금액(TotalKm · TotalKRW)은 신청자 브라우저가 계산해 그대로 저장한다(06-30 6ca8df1 부터).
+   - 신청 때 쓴 단가를 이동 내역 각 줄(LinesJSON)의 rate 로 함께 남긴다(새 열 없이).
+   - 상세 줄 금액은 「그 신청의 단가」로 계산한다. 예전에는 지금 단가(RATE_PER_KM)로 다시 계산해, 단가가 바뀌면
+     지난 신청의 줄 금액이 조용히 바뀌고 저장된 합계와 어긋났다(상세 합계 줄은 원래 저장값 TotalKRW).
+     rate 가 없는 지난 신청은 저장된 Total(KRW) 를 그대로 재현하는 단가(당시 기준 단가 → 현재 단가 → 합계 ÷ 거리)를 찾는다.
+   - km × 단가 합 ≠ 저장 Total(KRW), 거리 합 ≠ 저장 총 거리, 신청 단가 ≠ 신청 당시 기준 단가(LTR-PC.json history) 이면 경고.
+   결재자 화면(상세 · 결재함 · 관리자)에 표시만 하고 막지 않는다 — 판단은 결재자. 근본 대책은 서버(흐름) 재계산. */
+function ltrLineAmt(km, rate){ const t = (parseFloat(km)||0) * (Number(rate)||0); return t<=0 ? 0 : Math.round(t); }
+function ltrAmountCheck(v, ls){
+  ls = Array.isArray(ls) ? ls : [];
+  const kms = ls.map(l=>parseFloat(l && l.mileage)||0);
+  const kmSum = kms.reduce((s,k)=>s+k, 0);
+  const savedKRW = Math.round(Number(v && v.TotalKRW)||0);
+  const official = ltrOfficialRateAt(v && v.SubmittedDate);
+  const hasRate = ls.length>0 && ls.every(l=>l && Number(l.rate)>0);
+  let rates;
+  if(hasRate) rates = ls.map(l=>Number(l.rate));
+  else {
+    const sumAt = r => kms.reduce((s,k)=>s+ltrLineAmt(k, r), 0);
+    const r0 = kmSum>0 ? savedKRW/kmSum : 0;
+    const cands = [official, RATE_PER_KM, Math.round(r0), Math.round(r0*10)/10, Math.round(r0*100)/100].filter(r=>r>0);
+    const hit = cands.find(r=>sumAt(r)===savedKRW);
+    const r = hit || official || RATE_PER_KM;
+    rates = ls.map(()=>r);
+  }
+  const lineAmt = kms.map((k,i)=>ltrLineAmt(k, rates[i]));
+  const calcKRW = lineAmt.reduce((s,a)=>s+a, 0);
+  const issues = [];
+  const fk = n => (Math.round(n*100)/100).toLocaleString('ko-KR');
+  if(calcKRW !== savedKRW) issues.push('거리 × 단가 재계산 '+calcKRW.toLocaleString('ko-KR')+'원 ≠ 저장된 Total(KRW) '+savedKRW.toLocaleString('ko-KR')+'원');
+  if(Math.abs(kmSum - (Number(v && v.TotalKm)||0)) > 0.05) issues.push('이동 내역 거리 합 '+fk(kmSum)+' km ≠ 저장된 총 거리 '+fk(Number(v && v.TotalKm)||0)+' km');
+  if(official){
+    const bad = [...new Set(rates)].filter(r=>Math.abs(r-official) > 0.0001);
+    if(bad.length) issues.push('신청 단가 '+bad.map(fk).join(', ')+'원/km ≠ 신청 당시 기준 단가 '+fk(official)+'원/km');
+  }
+  return { lineAmt, calcKRW, savedKRW, kmSum, rates, official, legacy: !hasRate, issues };
+}
+function ltrAmountWarnHtml(c){
+  if(!c || !c.issues.length) return '';
+  return '<div class="ltr-amt-warn" style="background:#fde7e9;border:1px solid #a4262c;border-radius:6px;padding:7px 11px;margin-top:6px;font-size:.72rem;color:#a4262c;line-height:1.5">'
+    + '<b>⚠ 금액 확인 필요</b><br>' + c.issues.map(escHtml).join('<br>') + '</div>';
+}
+// 결재함 · 관리자 목록 Total(KRW) 칸의 ⚠ — 문제 없으면 빈 문자열(화면 그대로)
+function ltrAmtFlag(v){
+  let ls = []; try { ls = JSON.parse((v && v.LinesJSON)||'[]'); } catch(e){ ls = []; }
+  const c = ltrAmountCheck(v||{}, ls);
+  if(!c.issues.length) return '';
+  return ' <span title="'+escHtml('금액 확인 필요 — '+c.issues.join(' / '))+'" style="color:#a4262c;cursor:help">⚠</span>';
+}
 function calcLineTotal(mileage) {
   const km = parseFloat(mileage)||0;
   const total = km*RATE_PER_KM;
@@ -1612,11 +1714,11 @@ function renderLines() {
     const total = calcLineTotal(l.mileage);
     return `<tr>
       <td style="text-align:center;color:#a19f9d">${i+1}</td>
-      <td><input type="date" value="${l.date||''}" onchange="lines[${i}].date=this.value" style="width:100%;border:1px solid #d2d0ce;border-radius:4px;padding:5px 6px;font-size:12px"></td>
-      <td><input type="text" value="${l.from||''}" placeholder="출발지" onchange="lines[${i}].from=this.value" style="width:100%;border:1px solid #d2d0ce;border-radius:4px;padding:5px 6px;font-size:12px"></td>
-      <td><input type="text" value="${l.to||''}" placeholder="도착지" onchange="lines[${i}].to=this.value" style="width:100%;border:1px solid #d2d0ce;border-radius:4px;padding:5px 6px;font-size:12px"></td>
-      <td><input type="text" value="${l.purpose||''}" placeholder="목적" onchange="lines[${i}].purpose=this.value" style="width:100%;border:1px solid #d2d0ce;border-radius:4px;padding:5px 6px;font-size:12px"></td>
-      <td><input type="number" step="0.1" min="0" value="${l.mileage||''}" placeholder="0" oninput="onMileageInput(${i}, this)" style="width:100%;border:1px solid #d2d0ce;border-radius:4px;padding:5px 6px;font-size:12px;text-align:right"></td>
+      <td><input type="date" value="${escHtml(l.date||'')}" onchange="lines[${i}].date=this.value" style="width:100%;border:1px solid #d2d0ce;border-radius:4px;padding:5px 6px;font-size:12px"></td>
+      <td><input type="text" value="${escHtml(l.from||'')}" placeholder="출발지" onchange="lines[${i}].from=this.value" style="width:100%;border:1px solid #d2d0ce;border-radius:4px;padding:5px 6px;font-size:12px"></td>
+      <td><input type="text" value="${escHtml(l.to||'')}" placeholder="도착지" onchange="lines[${i}].to=this.value" style="width:100%;border:1px solid #d2d0ce;border-radius:4px;padding:5px 6px;font-size:12px"></td>
+      <td><input type="text" value="${escHtml(l.purpose||'')}" placeholder="목적" onchange="lines[${i}].purpose=this.value" style="width:100%;border:1px solid #d2d0ce;border-radius:4px;padding:5px 6px;font-size:12px"></td>
+      <td><input type="number" step="0.1" min="0" value="${escHtml(l.mileage||'')}" placeholder="0" oninput="onMileageInput(${i}, this)" style="width:100%;border:1px solid #d2d0ce;border-radius:4px;padding:5px 6px;font-size:12px;text-align:right"></td>
       <td id="line-total-${i}" style="text-align:right;font-weight:600;color:#0078d4">${total?total.toLocaleString('ko-KR'):'<span style="color:#a19f9d">-</span>'}</td>
       <td><button class="btn-del" onclick="deleteLine(${i})">✕</button></td>
     </tr>`;
@@ -1668,7 +1770,7 @@ function removeLtrFile(i){ ltrFiles.splice(i,1); renderLtrFiles(); }
 function renderLtrFiles(){
   const totalMB=ltrFiles.reduce((s,f)=>s+f.size,0)/1024/1024;
   document.getElementById('ltr-file-list').innerHTML = ltrFiles.map((f,i)=>
-    `<div class="file-item"><span>📄 ${f.name} <span style="color:#a19f9d">(${(f.size/1024/1024).toFixed(2)}MB)</span></span><button onclick="removeLtrFile(${i})">✕</button></div>`
+    `<div class="file-item"><span>📄 ${escHtml(f.name)} <span style="color:#a19f9d">(${(f.size/1024/1024).toFixed(2)}MB)</span></span><button onclick="removeLtrFile(${i})">✕</button></div>`
   ).join('')+(ltrFiles.length?`<div style="font-size:11px;color:#605e5c;text-align:right;margin-top:4px">합계: ${totalMB.toFixed(2)}MB / 20MB</div>`:'');
 }
 
@@ -1769,7 +1871,7 @@ async function saveRequest(status) {
         RequesterEmail: user?.username||'',
         DeptHeadName: approvers[0].name,
         DeptHeadEmail: approvers[0].email,
-        LinesJSON: JSON.stringify(lines),
+        LinesJSON: JSON.stringify(lines.map(l=>Object.assign({}, l, {rate: RATE_PER_KM}))),   // 신청 때 쓴 단가(원/km)를 줄마다 남긴다 — 상세 재검증 · 지난 신청 금액 고정(10-10)
         TotalKm: totalKm,
         TotalKRW: totalKrw,
         SubmittedDate: status==='대기'?new Date().toISOString():null
@@ -1895,16 +1997,16 @@ function renderList(){
     body.innerHTML=`<tr><td colspan="9" class="list-empty">${voucherListCache.length?'조회 결과가 없습니다.':'신청 내역이 없습니다.'}</td></tr>`;
     return;
   }
-  body.innerHTML=list.map((v,i)=>`<tr onclick="openVoucherSP('${v._spId}')">
+  body.innerHTML=list.map((v,i)=>`<tr onclick="openVoucherSP('${_idq(v._spId)}')">
     <td style="color:#a19f9d;font-size:.78rem">${list.length-i}</td>
-    <td style="font-size:.78rem;color:#605e5c">${v.RequesterEmail||'-'}</td>
-    <td style="font-size:.75rem;color:#0078d4">${v.Title||'-'}</td>
-    <td style="font-size:.78rem;color:#605e5c">${v.DeptHeadEmail||'-'}</td>
-    <td style="text-align:right;font-size:.78rem">${(v.TotalKm||0).toLocaleString('ko-KR')}</td>
+    <td style="font-size:.78rem;color:#605e5c">${escHtml(v.RequesterEmail||'-')}</td>
+    <td style="font-size:.75rem;color:#0078d4">${escHtml(v.Title||'-')}</td>
+    <td style="font-size:.78rem;color:#605e5c">${escHtml(v.DeptHeadEmail||'-')}</td>
+    <td style="text-align:right;font-size:.78rem">${escHtml((v.TotalKm||0).toLocaleString('ko-KR'))}</td>
     <td style="text-align:right;font-weight:700;color:#0078d4;font-size:.78rem">${fmtK(v.TotalKRW)}</td>
-    <td><span class="${stMap[v.Status]||'badge-대기'}">${stLabel[v.Status]||v.Status}</span></td>
+    <td><span class="${stMap[v.Status]||'badge-대기'}">${escHtml(stLabel[v.Status]||v.Status)}</span></td>
     <td style="font-size:.78rem;color:#605e5c">${fmtDate(v.SubmittedDate)}</td>
-    <td onclick="event.stopPropagation()" style="text-align:center">${v.Status==='대기'?`<button onclick="confirmWithdraw('${v._spId}')" style="background:#ef4444;color:#fff;border:none;border-radius:4px;padding:2px 12px;font-size:.75rem;line-height:16px;cursor:pointer;font-family:inherit;white-space:nowrap">Withdraw</button>`:''}</td>
+    <td onclick="event.stopPropagation()" style="text-align:center">${v.Status==='대기'?`<button onclick="confirmWithdraw('${_idq(v._spId)}')" style="background:#ef4444;color:#fff;border:none;border-radius:4px;padding:2px 12px;font-size:.75rem;line-height:16px;cursor:pointer;font-family:inherit;white-space:nowrap">Withdraw</button>`:''}</td>
   </tr>`).join('');
 }
 
@@ -1946,7 +2048,7 @@ async function loadApprovalQueue() {
     if(badge){ badge.textContent = approvalQueueCache.length; badge.style.display = approvalQueueCache.length ? 'inline' : 'none'; }
   } catch(e) {
     console.error('loadApprovalQueue error:', e);
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:40px;color:#a4262c">${e.message}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:40px;color:#a4262c">${escHtml(e.message)}</td></tr>`;
   }
 }
 function renderApprovalQueue() {
@@ -1957,17 +2059,17 @@ function renderApprovalQueue() {
   }
   tbody.innerHTML = approvalQueueCache.map((item,i)=>{
     const v = item._voucher;
-    return `<tr onclick="openVoucherSP('${v._spId}')" style="cursor:pointer">
+    return `<tr onclick="openVoucherSP('${_idq(v._spId)}')" style="cursor:pointer">
       <td style="color:#a19f9d;font-size:.78rem">${i+1}</td>
-      <td style="font-size:.78rem;color:#605e5c">${v.RequesterEmail||'-'}</td>
-      <td style="font-size:.75rem;color:#0078d4">${v.Title||'-'}</td>
-      <td style="text-align:right;font-size:.78rem">${(v.TotalKm||0).toLocaleString('ko-KR')}</td>
-      <td style="text-align:right;font-weight:700;color:#0078d4;font-size:.78rem">${fmtK(v.TotalKRW)}</td>
-      <td><span class="${stMap[v.Status]||'badge-대기'}">${stLabel[v.Status]||v.Status}</span></td>
+      <td style="font-size:.78rem;color:#605e5c">${escHtml(v.RequesterEmail||'-')}</td>
+      <td style="font-size:.75rem;color:#0078d4">${escHtml(v.Title||'-')}</td>
+      <td style="text-align:right;font-size:.78rem">${escHtml((v.TotalKm||0).toLocaleString('ko-KR'))}</td>
+      <td style="text-align:right;font-weight:700;color:#0078d4;font-size:.78rem">${fmtK(v.TotalKRW)}${ltrAmtFlag(v)}</td>
+      <td><span class="${stMap[v.Status]||'badge-대기'}">${escHtml(stLabel[v.Status]||v.Status)}</span></td>
       <td style="font-size:.78rem;color:#605e5c">${fmtDate(v.SubmittedDate)}</td>
       <td onclick="event.stopPropagation()" style="text-align:center;white-space:nowrap">
-        <button style="padding:4px 10px;font-size:.72rem;background:#107c10;color:#fff;border:none;border-radius:4px;cursor:pointer;margin-right:4px" onclick="showApprConfirm(${item._apprId},'승인',${item.RequestID})">승인</button>
-        <button style="padding:4px 10px;font-size:.72rem;background:#a4262c;color:#fff;border:none;border-radius:4px;cursor:pointer" onclick="showApprConfirm(${item._apprId},'반려',${item.RequestID})">반려</button>
+        <button style="padding:4px 10px;font-size:.72rem;background:#107c10;color:#fff;border:none;border-radius:4px;cursor:pointer;margin-right:4px" onclick="showApprConfirm(${_idq(item._apprId)},'승인',${_idq(item.RequestID)})">승인</button>
+        <button style="padding:4px 10px;font-size:.72rem;background:#a4262c;color:#fff;border:none;border-radius:4px;cursor:pointer" onclick="showApprConfirm(${_idq(item._apprId)},'반려',${_idq(item.RequestID)})">반려</button>
       </td>
     </tr>`;
   }).join('');
@@ -2194,14 +2296,14 @@ function renderAdminList(){
   const slice = adminListCache.slice(cur * PAGE_SIZE, (cur + 1) * PAGE_SIZE);
   body.innerHTML = slice.map((v,idx)=>{
     const reverseNo = total - (cur * PAGE_SIZE + idx);
-    return `<tr onclick="openVoucherSP('${v._spId}')">
+    return `<tr onclick="openVoucherSP('${_idq(v._spId)}')">
     <td style="color:#a19f9d;font-size:.78rem">${reverseNo}</td>
-    <td style="font-size:.78rem;color:#605e5c">${v.RequesterEmail||'-'}</td>
-    <td style="font-size:.75rem;color:#0078d4">${v.Title||'-'}</td>
-    <td style="font-size:.78rem;color:#605e5c">${v.DeptHeadEmail||'-'}</td>
-    <td style="text-align:right;font-size:.78rem">${(v.TotalKm||0).toLocaleString('ko-KR')}</td>
-    <td style="text-align:right;font-weight:700;color:#0078d4;font-size:.78rem">${fmtK(v.TotalKRW)}</td>
-    <td><span class="${stMap[v.Status]||'badge-대기'}">${stLabel[v.Status]||v.Status}</span></td>
+    <td style="font-size:.78rem;color:#605e5c">${escHtml(v.RequesterEmail||'-')}</td>
+    <td style="font-size:.75rem;color:#0078d4">${escHtml(v.Title||'-')}</td>
+    <td style="font-size:.78rem;color:#605e5c">${escHtml(v.DeptHeadEmail||'-')}</td>
+    <td style="text-align:right;font-size:.78rem">${escHtml((v.TotalKm||0).toLocaleString('ko-KR'))}</td>
+    <td style="text-align:right;font-weight:700;color:#0078d4;font-size:.78rem">${fmtK(v.TotalKRW)}${ltrAmtFlag(v)}</td>
+    <td><span class="${stMap[v.Status]||'badge-대기'}">${escHtml(stLabel[v.Status]||v.Status)}</span></td>
     <td style="font-size:.78rem;color:#605e5c">${fmtDate(v.SubmittedDate)}</td>
   </tr>`;
   }).join('');
@@ -2251,7 +2353,9 @@ async function openVoucherSP(spId){
   try { lines_data = JSON.parse(v.LinesJSON||'[]'); }
   catch(e) { console.error('[openVoucherSP] LinesJSON 파싱 실패:', e.message); }
 
-  const row = (label, value) => `<div class="det-row"><div class="det-lbl">${label}</div><div class="det-val">${value||'-'}</div></div>`;
+  // APS 와 같게 row(글자 — 이스케이프) / rowRaw(HTML — 배지 · 굵은 글씨처럼 만든 값만)(10-10)
+  const rowRaw = (label, html) => `<div class="det-row"><div class="det-lbl">${label}</div><div class="det-val">${html||'-'}</div></div>`;
+  const row = (label, value) => rowRaw(label, escHtml(value||'-'));
   // PC 시간대와 무관하게 항상 KST로 표시한다(+9h 보정 후 UTC 게터로 읽기).
   const submittedDate = (() => {
     if(!v.SubmittedDate) return '-';
@@ -2260,15 +2364,19 @@ async function openVoucherSP(spId){
     return `${d.getUTCFullYear()}-${p(d.getUTCMonth()+1)}-${p(d.getUTCDate())} ${p(d.getUTCHours())}:${p(d.getUTCMinutes())}`;
   })();
 
+  if(!Array.isArray(lines_data)) lines_data = [];
+  // 줄 금액은 그 신청의 단가로 — 지금 단가로 다시 계산하지 않는다(10-10, 위 「유류비 금액 재검증」)
+  const _amtChk = ltrAmountCheck(v, lines_data);
   const lineRows = lines_data.map((l,i)=>{
-    const total = calcLineTotal(l.mileage);
+    l = l || {};
+    const total = _amtChk.lineAmt[i];
     return `<tr style="border-bottom:1px solid #f3f2f1">
       <td style="padding:6px 7px;color:#605e5c;font-size:.74rem">${i+1}</td>
-      <td style="padding:6px 7px;font-size:.74rem">${l.date||'-'}</td>
-      <td style="padding:6px 7px;font-size:.74rem">${l.from||'-'}</td>
-      <td style="padding:6px 7px;font-size:.74rem">${l.to||'-'}</td>
-      <td style="padding:6px 7px;font-size:.74rem">${l.purpose||'-'}</td>
-      <td style="padding:6px 7px;text-align:right;font-size:.74rem">${l.mileage||'-'}</td>
+      <td style="padding:6px 7px;font-size:.74rem">${escHtml(l.date||'-')}</td>
+      <td style="padding:6px 7px;font-size:.74rem">${escHtml(l.from||'-')}</td>
+      <td style="padding:6px 7px;font-size:.74rem">${escHtml(l.to||'-')}</td>
+      <td style="padding:6px 7px;font-size:.74rem">${escHtml(l.purpose||'-')}</td>
+      <td style="padding:6px 7px;text-align:right;font-size:.74rem">${escHtml(l.mileage||'-')}</td>
       <td style="padding:6px 7px;text-align:right;font-weight:600;font-size:.74rem">${total?total.toLocaleString('ko-KR'):'-'}</td>
     </tr>`;
   }).join('');
@@ -2286,14 +2394,14 @@ async function openVoucherSP(spId){
         driveId = decoded.substring(0, sepIdx);
         itemId = decoded.substring(sepIdx+3);
       }catch(e){}
-      return `<div style="padding:4px 0;font-size:.8rem"><a href="#" class="file-dl-link" data-drive="${encodeURIComponent(driveId)}" data-id="${encodeURIComponent(itemId)}" data-name="${encodeURIComponent(name)}" style="color:#0078d4;cursor:pointer;text-decoration:none">📎 ${name}</a></div>`;
+      return `<div style="padding:4px 0;font-size:.8rem"><a href="#" class="file-dl-link" data-drive="${encodeURIComponent(driveId)}" data-id="${encodeURIComponent(itemId)}" data-name="${encodeURIComponent(name)}" style="color:#0078d4;cursor:pointer;text-decoration:none">📎 ${escHtml(name)}</a></div>`;
     }).join('');
   }
 
   document.getElementById('voucher-detail-content').innerHTML = `
     <div class="det-sec">기본 정보</div>
-    ${row('Title', `<span style="font-weight:700">${v.Title||'-'}</span>`)}
-    ${row('상태', `<span class="${stMap[v.Status]||'badge-대기'}">${stLabel[v.Status]||v.Status||'-'}</span>`)}
+    ${rowRaw('Title', `<span style="font-weight:700">${escHtml(v.Title||'-')}</span>`)}
+    ${rowRaw('상태', `<span class="${stMap[v.Status]||'badge-대기'}">${escHtml(stLabel[v.Status]||v.Status||'-')}</span>`)}
     ${row('신청자', v.RequesterEmail||'-')}
     ${row('신청일시', submittedDate)}
 
@@ -2324,11 +2432,12 @@ async function openVoucherSP(spId){
     </div>
     <div style="display:flex;justify-content:flex-end;gap:10px;padding:9px 8px;background:#f3f2f1;border-radius:4px;margin-top:6px">
       <span style="font-size:.75rem;color:#605e5c">총 거리(km)</span>
-      <span style="font-weight:700;font-size:.85rem">${(v.TotalKm||0).toLocaleString('ko-KR')}</span>
+      <span style="font-weight:700;font-size:.85rem">${escHtml((v.TotalKm||0).toLocaleString('ko-KR'))}</span>
       <span style="font-size:.75rem;color:#a19f9d">|</span>
       <span style="font-size:.75rem;color:#605e5c">Total(KRW)</span>
       <span style="font-weight:700;font-size:.85rem;color:#0078d4">${fmtK(v.TotalKRW)}</span>
     </div>
+    ${ltrAmountWarnHtml(_amtChk)}
 
     <div class="det-sec">결재 이력</div>
     <div id="voucher-appr-history" style="background:#f9f9f9;border-radius:4px;border:1px solid #edebe9">
@@ -2396,12 +2505,12 @@ async function loadApprovalHistory(spId){
       const stText = stLabelMap[af.Status] || af.Status || '대기';
       return `<div class="appr-item">
         <div>
-          <b>${af.ApprovalOrder}차 결재자(Department Head)</b>${aacRolePill(af.ApproverRole, af.Status)}
-          <br><span style="font-size:.72rem;color:#605e5c">${af.ApproverName||''} · ${af.ApproverEmail||''}</span>
+          <b>${escHtml(af.ApprovalOrder)}차 결재자(Department Head)</b>${aacRolePill(af.ApproverRole, af.Status)}
+          <br><span style="font-size:.72rem;color:#605e5c">${escHtml(af.ApproverName||'')} · ${escHtml(af.ApproverEmail||'')}</span>
           ${af.ApprovalDate?`<br><span style="font-size:.72rem;color:#a19f9d">${fmtDate2(af.ApprovalDate)}</span>`:''}
           ${af.Comment?`<br><span style="font-size:.72rem;background:#fff;border:1px solid #edebe9;border-radius:4px;padding:2px 6px;display:inline-block;margin-top:2px;white-space:pre-wrap">💬 ${safeText(af.Comment)}</span>`:''}
         </div>
-        <span class="${cls}">${stText}</span>
+        <span class="${cls}">${escHtml(stText)}</span>
       </div>`;
     }).join('');
     document.getElementById('voucher-appr-history').innerHTML = html;
@@ -2410,7 +2519,7 @@ async function loadApprovalHistory(spId){
     const btnWrap = document.getElementById('voucher-appr-action-btns');
     if(btnWrap){
       btnWrap.innerHTML = myPending
-        ? `<div class="modal-action"><button class="btn-approve" onclick="showApprConfirm(${myPending._apprId},'승인',${v._spId})">✅ 승인</button><button class="btn-reject" onclick="showApprConfirm(${myPending._apprId},'반려',${v._spId})">❌ 반려</button></div>`
+        ? `<div class="modal-action"><button class="btn-approve" onclick="showApprConfirm(${_idq(myPending._apprId)},'승인',${_idq(v._spId)})">✅ 승인</button><button class="btn-reject" onclick="showApprConfirm(${_idq(myPending._apprId)},'반려',${_idq(v._spId)})">❌ 반려</button></div>`
         : '';
     }
   }catch(e){
