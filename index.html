@@ -2251,8 +2251,11 @@ async function exportAdminExcel(){
     const now = new Date(new Date().getTime()+9*3600*1000);
     const ds = now.getUTCFullYear()+String(now.getUTCMonth()+1).padStart(2,'0')+String(now.getUTCDate()).padStart(2,'0')+'_'+String(now.getUTCHours()).padStart(2,'0')+String(now.getUTCMinutes()).padStart(2,'0');
     XLSX.writeFile(wb, 'LTR-PC_Admin_'+ds+'.xlsx');
+    // 출력 기록(10-10) — FA · BP · GW 의 「Excel 내보내기」 기록과 같은 모양. 비차단 · 실패해도 내보내기에 영향 없음
+    try { logAction('LTR-PC', 'Excel 내보내기', { 건수: items.length, 필터: { 상태: fs || '전체', 검색어: fk || '' } }); } catch (le) { console.warn('[Log] Excel 내보내기 기록 생략:', le && le.message); }
   } catch(e) {
     console.error('exportAdminExcel error:', e);
+    try { const _ls = (document.getElementById('admin-status') || { value: '' }).value, _lk = (document.getElementById('admin-search') || { value: '' }).value || ''; logAction('LTR-PC', 'Excel 내보내기 실패', { 필터: { 상태: _ls || '전체', 검색어: _lk.toLowerCase() }, 오류: String((e && e.message) || e || '').slice(0, 200) }); } catch (le) { console.warn('[Log] Excel 내보내기 실패 기록 생략:', le && le.message); }
     showAccAlert('Excel 생성 실패', e.message, '⚠️');
   } finally {
     if(btn){ btn.disabled = false; btn.textContent = orig; }
@@ -2816,8 +2819,12 @@ async function exportModalPdf() {
     a.download = saveFileName;
     document.body.appendChild(a); a.click();
     setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);
+    // 출력 기록(10-10 pdflog) — 파일을 내려보낸 뒤 Logging_data 에 남긴다(관리자 탭 · 단가 변경과 같은 logAction).
+    // logAction 은 기다리지 않는 비차단 호출이고 안에서 오류를 삼킨다 — 기록이 실패 · 지연돼도 PDF 는 그대로 나간다.
+    try { logAction('LTR-PC', 'PDF 출력', { 신청: (_f && _f.Title) || '', id: window._currentDetailId || '', 상태: (_f && _f.Status) || '', 종류: '결재내용 통합 PDF', 파일: saveFileName, 페이지: mainDoc.getPageCount() }); } catch (le) { console.warn('[Log] PDF 출력 기록 생략:', le && le.message); }
 
   } catch(e) {
+    try { const _lf = window._currentDetailFields; logAction('LTR-PC', 'PDF 출력 실패', { 신청: (_lf && _lf.Title) || '', id: window._currentDetailId || '', 상태: (_lf && _lf.Status) || '', 종류: '결재내용 통합 PDF', 오류: String((e && e.message) || e || '').slice(0, 200) }); } catch (le) { console.warn('[Log] PDF 출력 실패 기록 생략:', le && le.message); }
     alert('PDF 생성 오류: ' + e.message);
     console.error(e);
   } finally {
