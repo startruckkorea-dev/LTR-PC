@@ -224,6 +224,9 @@ table.lines input:focus, table.lines select:focus { outline: none; border-color:
 .modal { background: #fff; border-radius: 8px; box-shadow: 0 16px 48px rgba(0,0,0,.22); width: 100%; max-width: 520px; max-height: 75vh; overflow-y: auto; }
 .modal-head { padding: 14px 18px; background: #0078d4; color: #fff; display: flex; justify-content: space-between; align-items: center; font-weight: 600; border-radius: 8px 8px 0 0; }
 .modal-close { background: none; border: none; color: #fff; font-size: 18px; cursor: pointer; }
+/* aps-web-fix LTR-PC(10-10) — 위 흰 글자 규칙(옛 BP 팝업 파란 제목 줄용)이 상세 모달 × 까지 덮어 흰 바탕에서 보이지 않던 것 → 회색(#605e5c, 다른 시스템과 같은 색).
+   × 는 PDF 캡처 대상(#voucher-detail-content) 밖이라 PDF 에는 나오지 않는다. 인쇄는 그대로(screen 한정). */
+@media screen { #voucher-detail-modal .modal-close { color: #605e5c; } }
 .modal-body { padding: 16px 18px; }
 .search-bar { display: flex; gap: 6px; margin-bottom: 12px; }
 .search-bar input { flex: 1; border: 1px solid #d2d0ce; border-radius: 4px; padding: 7px 10px; font-size: 13px; font-family: inherit; }
