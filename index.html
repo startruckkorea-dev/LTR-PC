@@ -1391,6 +1391,7 @@ async function saveRate() {
     renderLines();
   } catch(e) {
     if(e && e.code==='NOT_ADMIN'){ try { logAction('LTR-PC', '단가 변경 차단', { reason: '관리자 명단에 없음', to: v }); } catch(le){} }
+    else logChange('LTR-PC', '단가 변경 실패', () => ({ to: v, 오류: logErrText(e) }));   // 저장 실패도 남긴다(10-15)
     showAccAlert('단가 저장 실패', e.message, '⚠️');
   }
 }
@@ -1527,13 +1528,38 @@ function logAction(systemName, action, detail) {
       const rand = Math.random().toString(36).slice(2, 6);
       const folderPath = 'Logging_data/' + systemName + '/' + dateStr;
       if (!(await _ensureLogFolder(driveId, folderPath, t))) return;
-      await fetch(GRAPH + '/drives/' + driveId + '/root:/' + folderPath + '/' + timeStr + '_' + userTag + '_' + rand + '.json:/content', {
+      const _lr = await fetch(GRAPH + '/drives/' + driveId + '/root:/' + folderPath + '/' + timeStr + '_' + userTag + '_' + rand + '.json:/content', {
         method: 'PUT', headers: { Authorization: 'Bearer ' + t, 'Content-Type': 'application/json' },
         body: JSON.stringify({ timestampKST: dateStr + ' ' + p(now.getUTCHours()) + ':' + p(now.getUTCMinutes()) + ':' + p(now.getUTCSeconds()), user: rawUser, system: systemName, action, detail: detail || {} })
       });
+      // 저장이 거부돼도(403 · 429 · 5xx) 흔적이 없던 것 — APS(10-10)처럼 콘솔에 경고만 남긴다(10-15). 원 기능엔 영향 없음
+      if (_lr && !_lr.ok) console.warn('[Log] 기록 실패(무시됨, 원 기능엔 영향 없음): HTTP ' + _lr.status + ' —', systemName, action);
     } catch(e) { console.warn('[Log] 기록 실패(무시됨):', e.message); }
   })();
 }
+/* ══ 데이터 변경 기록(10-15) ══
+   상신 · 결재 승인 · 반려 · 철회 · 관리자 데이터 변경을 위 logAction 으로 Logging_data 에 남긴다.
+   action 이름 · detail 모양은 APS 통합 결재함(Logging_data/APS 「결재 승인」 · 「결재 반려」)에 맞춘다 —
+   신청번호 · 제목 · 결과 · 차수 · 결재자 · 처리자 · 대리 · 역할 · 의견 글자 수(의견 원문 · 금액 · 계좌 · 연락처 같은 개인정보는 넣지 않는다).
+   IT 계정 제외 규칙(10-01, IT Manager · IT system service)은 logAction 안에서 그대로 적용된다(감사 예외를 두지 않는다 — 10-15 결정).
+   실제 저장(Graph 쓰기)이 끝난 뒤에만 부르고 기다리지 않는다. detail 을 만들다 오류가 나도 원 기능으로 번지지 않게 감싼다. */
+function logChange(systemName, action, mk) {
+  try { logAction(systemName, action, typeof mk === 'function' ? mk() : (mk || {})); }
+  catch (e) { console.warn('[Log] 기록 생략(원 기능엔 영향 없음):', action, e && e.message); }
+}
+function logAprDetail(f, extra) {   // 결재행 fields(처리 전 값) → APS 와 같은 차수 · 결재자 · 처리자 · 대리 · 역할
+  f = f || {};
+  const orig = String(f.ApproverEmail || '');
+  let dg = null; try { dg = (typeof aacDelegatorOf === 'function') ? aacDelegatorOf(orig) : null; } catch (e) {}
+  return Object.assign({
+    차수: f.ApprovalOrder == null ? '' : f.ApprovalOrder,
+    결재자: orig,
+    처리자: String((typeof user !== 'undefined' && user && (user.email || user.username)) || ''),
+    대리: dg ? '예 — ' + (f.ApproverName || dg.name || orig) + ' 님 대신' : '',
+    역할: String(f.ApproverRole || '')
+  }, extra || {});
+}
+function logErrText(e) { return String((e && e.message) || e || '').slice(0, 200); }
 // 탭 전환 폭 애니메이션(APS 공통 · 10-07) — 사용자가 처음 누르거나 키를 칠 때부터 html.aps-wtx 를 켠다.
 // 로그인 직후 첫 탭을 고르며 폭을 정할 때(바로가기 주소로 결재함 · 관리자를 바로 여는 경우 포함)는 움직이지 않게 하려는 것.
 // 넓어지는 0.2초 동안은 틀이 아직 좁아 표가 넘치므로 가로 스크롤 막대가 잠깐 생겼다 사라지며 아래 내용이 출렁인다(Windows 기본 스크롤 막대).
@@ -1965,10 +1991,13 @@ async function saveRequest(status) {
       }
     }
 
+    // 상신 기록(10-15) — 신청 · 결재행 저장이 끝난 뒤. 금액 · 이동 내역은 넣지 않는다
+    logChange('LTR-PC', status==='대기' ? '상신' : '임시저장', () => ({ 신청번호: parseInt(requestId), 제목: voucherId, 결재단계: status==='대기' ? approvers.length : 0, 첨부: ltrFiles.length, 첨부경고: attachmentWarning ? '있음' : '' }));
     showAccAlert('결재 요청이 완료되었습니다.', 'Title: '+voucherId+attachmentWarning, attachmentWarning?'⚠️':'✅');
     resetForm(); await loadMyList(); switchTab('list');
   } catch(e) {
     console.error('saveRequest error:', e);
+    logChange('LTR-PC', (status==='대기' ? '상신' : '임시저장') + ' 실패', () => ({ 제목: /_ID-\d+$/.test(voucherId) ? voucherId : '', 오류: logErrText(e) }));
     showAccAlert('오류가 발생했습니다.', e.message, '⚠️');
   } finally {
     if(btn){btn.disabled=false; btn.textContent='Submit';}
@@ -2129,6 +2158,10 @@ async function confirmApprAction() {
 }
 // LTR-PC는 1단계 결재(부서장)만 운영 — 승인 즉시 승인완료 처리
 async function processApproval(apprId, action, reqId, comment='') {
+  // 결재 처리 기록(10-15) — APS 통합 결재함과 같은 「결재 승인」 · 「결재 반려」. 결재행을 쓴 뒤에만 남기고, 쓰기 전 오류는 「…실패」
+  const _lgAct = action==='승인' ? '결재 승인' : '결재 반려';
+  let _lgF = null, _lgW = false;
+  const _lg = (what, res, ex) => logChange('LTR-PC', what, () => Object.assign({ 신청번호: parseInt(reqId), 제목: (_lgF && _lgF.VoucherID) || '', 결과: res }, logAprDetail(_lgF, { 의견글자수: String(comment||'').length, 결재행: apprId }), ex || {}));
   try {
     const t = await token();
     const curRes = await fetch(`${GRAPH}/sites/${siteId}/lists/${LIST_APPROVALS}/items/${apprId}?$expand=fields`,
@@ -2139,23 +2172,28 @@ async function processApproval(apprId, action, reqId, comment='') {
       loadApprovalQueue();
       return;
     }
+    _lgF = cur.fields;
     // 대리 처리면 결재자를 나(대리인)로 바꾸고 원 결재자를 역할 뒤에 남긴다(AAC). 대리 건이 아니면 그대로.
     await api(`/sites/${siteId}/lists/${LIST_APPROVALS}/items/${apprId}/fields`, 'PATCH', aacPatchWith({
       Status: action==='승인' ? '승인' : '반려',
       Comment: comment,
       ApprovalDate: new Date().toISOString()
     }, cur.fields));
+    _lgW = true;
     if(action === '반려') {
       await api(`/sites/${siteId}/lists/${LIST_REQUESTS}/items/${reqId}/fields`, 'PATCH', {Status:'반려'});
     } else {
       // 1단계 결재 — 바로 승인완료
       await api(`/sites/${siteId}/lists/${LIST_REQUESTS}/items/${reqId}/fields`, 'PATCH', {Status:'승인완료'});
     }
+    _lg(_lgAct, action==='반려' ? '반려 — 신청 반려' : '승인 — 최종 승인(신청 승인완료)');
     showAccAlert(action+' 처리되었습니다.', '', action==='반려'?'❌':'✅');
     closeDetailModal();
     loadApprovalQueue();
   } catch(e) {
     console.error('processApproval error:', e);
+    if(_lgW) _lg(_lgAct, '결재행은 기록됨 · 이후 단계 오류 — ' + logErrText(e));   // APS 와 같은 문구
+    else _lg(_lgAct + ' 실패', '처리 안 함', { 오류: logErrText(e) });
     showAccAlert('오류가 발생했습니다.', e.message, '⚠️');
   }
 }
@@ -2410,10 +2448,12 @@ async function withdrawRequest(spId) {
       await api(`/sites/${siteId}/lists/${LIST_APPROVALS}/items/${it.id}/fields`, 'PATCH', {Status:'철회(잠김)'});
     }
     await api(`/sites/${siteId}/lists/${LIST_REQUESTS}/items/${spId}/fields`, 'PATCH', {Status:'철회'});
+    logChange('LTR-PC', '철회', () => ({ 신청번호: parseInt(spId), 제목: ((voucherListCache||[]).find(x=>String(x._spId)===String(spId))||{}).Title || '', 처리: '본인', 결재행: items.length }));   // 10-15
     showAccAlert('신청이 철회되었습니다.', '', '✅');
     loadMyList();
   } catch(e) {
     console.error('withdrawRequest error:', e);
+    logChange('LTR-PC', '철회 실패', () => ({ 신청번호: parseInt(spId), 제목: ((voucherListCache||[]).find(x=>String(x._spId)===String(spId))||{}).Title || '', 오류: logErrText(e) }));
     showAccAlert('철회 처리 중 오류가 발생했습니다.', e.message, '⚠️');
   }
 }
