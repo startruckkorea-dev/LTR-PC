@@ -197,6 +197,30 @@ table.lines input:focus, table.lines select:focus { outline: none; border-color:
 /* ── List ── */
 .list-filters { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
 .list-filters select, .list-filters input { border: 1px solid #d2d0ce; border-radius: 4px; padding: 6px 10px; font-size: 13px; font-family: inherit; }
+
+/* APS 목록 필터 공통(aps-lf · 11-01 · 운영 반영 11-05 — hs-aps 와 같음) — 검색칸 폭 · 오른쪽 묶음(건수 · 새로고침 · Excel) · 새로고침 단추 · 연도 안내 · 제목 코드 칸 */
+input.aps-lf-q { width: 170px; }
+input.aps-lf-t { width: 180px; }
+.aps-lf-right { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.aps-lf-ref { display: inline-flex; align-items: center; gap: 5px; padding: 6px 10px; background: #fff; color: #605e5c; border: 1px solid #d2d0ce; border-radius: 4px; cursor: pointer; white-space: nowrap; font-family: inherit; line-height: 1.2; }
+.aps-lf-ref:hover { background: #f3f2f1; }
+.aps-lf-ref:disabled { opacity: .6; cursor: default; }
+.aps-lf-ref .ico { display: inline-block; font-size: 1.08em; line-height: 1; }
+.aps-lf-ref.busy .ico { animation: apsLfSpin .8s linear infinite; }
+@keyframes apsLfSpin { to { transform: rotate(360deg); } }
+.aps-lf-note { color: #a4262c; white-space: nowrap; }
+/* 제목 코드 칸 — 빈 칸에 「제목 코드 검색 ex. …」 흐린 안내(APS_LF.ph 가 오늘 날짜 예시 · 칸 폭을 맞춘다). 글자를 치면 안내는 숨는다 */
+.aps-lf-tw { position: relative; display: inline-flex; align-items: stretch; flex: 0 0 auto; max-width: 100%; }
+.aps-lf-tw > input.aps-lf-t { width: var(--aps-lf-tw, 236px); max-width: 100%; }
+.aps-lf-tw > input.aps-lf-t::placeholder { color: transparent; }
+.aps-lf-ph { position: absolute; left: 9px; right: 8px; top: 50%; transform: translateY(-50%); display: flex; align-items: baseline; gap: 6px; white-space: nowrap; overflow: hidden; pointer-events: none; color: #a19f9d; line-height: 1.2; }
+.aps-lf-ph small { font-size: .8em; color: #b3b0ad; letter-spacing: .1px; }
+.aps-lf-tw > input.aps-lf-t:not(:placeholder-shown) + .aps-lf-ph { visibility: hidden; }
+@media (max-width: 768px) {
+  .aps-lf-right { margin-left: 0; flex: 1 1 100%; justify-content: flex-end; }
+  .aps-lf-tw { flex: 1 1 100%; grid-column: 1 / -1; }
+  .aps-lf-tw > input.aps-lf-t { flex: 1 1 auto; width: 100%; min-width: 0; }
+}
 .voucher-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .voucher-table th { background: #f3f2f1; padding: 9px 10px; text-align: left; border-bottom: 2px solid #edebe9; font-size: 12px; font-weight: 600; color: #605e5c; white-space: nowrap; }
 .voucher-table td { padding: 10px 10px; border-bottom: 1px solid #edebe9; vertical-align: middle; }
@@ -497,7 +521,7 @@ button[style*="display:none"]+.pdf-log-note,button[style*="display: none"]+.pdf-
   input, select, textarea, button { max-width: 100%; box-sizing: border-box; }
   input[type=date], input[type=time], input[type=month], input[type=datetime-local] { min-width: 0; }
   #app .form-group > select, .appr-select-row select { height: 38px; min-height: 38px; }   /* iOS 기본 select 높이를 입력칸과 같게 — 모양은 그대로 */
-  .list-filters select, .list-filters input, #admin-status, #admin-search { height: 38px; min-height: 38px; }   /* 목록 · 관리자 필터: 선택 · 검색칸 같은 높이 */
+  .list-filters select, .list-filters input, #admin-status, #admin-search, #admin-title { height: 38px; min-height: 38px; }   /* 목록 · 관리자 필터: 선택 · 검색칸 같은 높이 */
   @supports (-webkit-touch-callout: none) {   /* iOS Safari 에서만 */
     input[type=date], input[type=time], input[type=month], input[type=datetime-local] { -webkit-appearance: none; appearance: none; display: block; min-height: 38px; line-height: normal; text-align: left; }
     table.lines input[type=date] { min-height: 34px; }
@@ -565,6 +589,7 @@ button[style*="display:none"]+.pdf-log-note,button[style*="display: none"]+.pdf-
   #tab-list .list-table { display: block; min-width: 0; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .list-filters select { flex: 1 1 100%; min-width: 0; }
   .list-filters input { flex: 1 1 100%; min-width: 0 !important; }
+  #tab-list .list-filters > span[id$="-count"] { margin-left: 0 !important; }   /* 건수(aps-lf)는 줄바꿈된 줄 왼쪽에 */
 
   /* ── 결재함 · 관리자 — 표는 카드 상자 안에서 가로 스크롤(기존) · 필터 줄은 줄바꿈 ── */
   #tab-appr > .card, #tab-admin > .card { -webkit-overflow-scrolling: touch; }
@@ -573,9 +598,10 @@ button[style*="display:none"]+.pdf-log-note,button[style*="display: none"]+.pdf-
   #tab-admin > .card > div[style*="display:flex"] > button { min-height: 40px; }
   #tab-admin > div[style*="flex-wrap:wrap"] { gap: 8px !important; }
   #admin-status { flex: 1 1 100%; min-width: 0; }
-  #admin-search { flex: 1 1 100%; min-width: 0 !important; }
-  #tab-admin > div[style*="flex-wrap:wrap"] > div[style*="margin-left:auto"] { margin-left: 0 !important; width: 100%; justify-content: space-between; }
-  #tab-admin > div[style*="flex-wrap:wrap"] > div[style*="margin-left:auto"] > button { min-height: 38px; }
+  #admin-search, #admin-title { flex: 1 1 100%; min-width: 0 !important; }
+  /* 오른쪽 묶음(aps-lf): 건수는 왼쪽 · 새로고침 · Excel 은 오른쪽 */
+  #tab-admin .aps-lf-right > span[id$="-count"] { margin-right: auto; }
+  #tab-admin .aps-lf-right > button { min-height: 38px; }
 
   /* ── 상세 모달 — 699px 이하만(PDF 출력 폭 700px 에서는 변경 전과 같은 배치) ── */
   @media (max-width: 699px) {
@@ -858,7 +884,10 @@ window.apsYear = (function () {
           <option value="반려">반려</option>
           <option value="철회">철회</option>
         </select>
-        <input type="text" id="f-kw" placeholder="검색 (From/To/Purpose)..." oninput="renderList()" style="min-width:200px">
+        <input type="text" id="f-kw" class="aps-lf-q" placeholder="제목 / 요청 제목 검색..." title="제목 · 요청 제목(이동 내역 Purpose) · From · To 로 찾습니다" oninput="renderList()">
+        <!-- 제목 코드 칸(aps-lf) — 다른 연도의 제목이면 Enter 로 그 연도로 -->
+        <span class="aps-lf-tw" id="f-title-w"><input type="text" id="f-title" class="aps-lf-t" oninput="renderList()" onkeydown="if(event.key==='Enter'){event.preventDefault();APS_LF.myEnter(this);}" placeholder=" " aria-label="제목 코드 검색" title="제목 코드(예: LTR-PC-2026-11-03_ID-128)로 찾습니다. 날짜 · 번호만 써도 됩니다. 다른 연도의 제목이면 Enter — 그 연도로 옮깁니다." autocomplete="off" spellcheck="false"><span class="aps-lf-ph" aria-hidden="true">제목 코드 검색<small data-ex="LTR-PC"></small></span></span>
+        <span id="list-count" style="font-size:.82rem;color:#605e5c;font-weight:500;margin-left:auto"></span>
       </div>
       <table class="list-table">
         <thead><tr><th style="width:40px">번호</th><th>신청자</th><th>Title</th><th>Department Head</th><th style="text-align:right">총 거리(km)</th><th style="text-align:right">Total(KRW)</th><th>Status</th><th>신청일</th><th style="width:90px;text-align:center">Withdraw</th></tr></thead>
@@ -972,11 +1001,14 @@ window.apsYear = (function () {
         <option value="반려">반려</option>
         <option value="철회">철회</option>
       </select>
-      <input type="text" id="admin-search" oninput="applyAdminFilters()" placeholder="신청자/Title/Department Head" style="border:1px solid #d2d0ce;border-radius:4px;padding:6px 10px;font-size:.72rem;font-family:inherit;min-width:220px">
-      <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+      <input type="text" id="admin-search" class="aps-lf-q" oninput="applyAdminFilters()" placeholder="신청자 / 요청 제목 검색..." title="신청자 메일 · 이름 · 요청 제목(이동 내역 Purpose) · 제목 · Department Head 메일로 찾습니다" style="border:1px solid #d2d0ce;border-radius:4px;padding:6px 10px;font-size:.72rem;font-family:inherit">
+      <!-- 제목 코드 칸(aps-lf) — 목록에 없는 건은 전체 제목을 쓰고 Enter: 항목 번호로 한 건을 바로 읽는다(ltrAdminTitleEnter) -->
+      <span class="aps-lf-tw" id="admin-title-w"><input type="text" id="admin-title" class="aps-lf-t" oninput="applyAdminFilters()" onkeydown="if(event.key==='Enter'){event.preventDefault();ltrAdminTitleEnter();}" placeholder=" " aria-label="제목 코드 검색" title="제목 코드(예: LTR-PC-2026-11-03_ID-128)로 찾습니다. 날짜 · 번호만 써도 됩니다. 목록에 없는 건은 전체 제목을 쓰고 Enter — 번호로 바로 찾습니다." autocomplete="off" spellcheck="false" style="border:1px solid #d2d0ce;border-radius:4px;padding:6px 10px;font-size:.72rem;font-family:inherit"><span class="aps-lf-ph" aria-hidden="true">제목 코드 검색<small data-ex="LTR-PC"></small></span></span>
+      <span class="aps-lf-right">
         <span style="font-size:.82rem;color:#605e5c;font-weight:500" id="admin-count"></span>
+        <button type="button" id="admin-refresh" class="aps-lf-ref" onclick="ltrAdminRefresh()" title="목록을 다시 불러옵니다. 지금 고른 필터는 그대로 유지됩니다." style="font-size:.82rem"><span class="ico" aria-hidden="true">↻</span>새로고침</button>
         <button onclick="exportAdminExcel()" style="padding:6px 14px;background:#107c10;color:#fff;border:none;border-radius:4px;font-size:.82rem;cursor:pointer;white-space:nowrap">📊 Excel 내보내기</button>
-      </div>
+      </span>
     </div>
     <div class="card" style="padding:0;overflow-x:auto">
       <table class="list-table">
@@ -2162,6 +2194,171 @@ function resetForm(){
   lines=[]; renderLines(); renderApproval();
 }
 
+/* ══ APS 목록 필터 공통 (aps-lf · 11-01 · 제목 코드 칸 11-03 · 운영 반영 11-05) ═══════════════════════
+   내 신청 목록 · 관리자 탭의 필터 줄을 APS 시스템끼리 같은 모양 · 같은 규칙으로 맞춘다(13개 시스템이 같은 코드 — hs-aps 와 같음).
+     내 신청 목록: [전체 상태] [전체 유형] [제목 / 요청 제목 검색] [제목 코드 검색] (+ 시스템 고유 필터) … 건수
+     관리자     : [전체 상태] [전체 유형] [신청자 / 요청 제목 검색] [제목 코드 검색] (+ 고유 필터) … 건수 · ↻ 새로고침 · 📊 Excel 내보내기
+   제목 규칙은 <접두어>-YYYY-MM-DD_ID-<번호> — 날짜는 KST 신청일, 번호는 그 해 사이트 목록의 항목 번호다.
+     · 입력하는 동안: 불러온 목록에서 제목을 바로 거른다(대소문자 무시 · 일부만 써도 됨: 「2026-10-30」 · 「ID-445」).
+       결재행 제목(…_ID-445-2)을 붙여 넣어도 신청 제목(…_ID-445)으로 찾는다.
+     · 연도: 제목의 연도가 지금 보는 연도(apsYear)와 다르면 건수 자리에 알리고, Enter 를 누르면 그 연도로 옮긴다.
+       데이터가 없는 연도는 옮기지 않고 「데이터 없음 · 준비 전」만 알린다.
+     · Enter(관리자): 지금 목록에 없고 번호가 있으면 사이트에서 항목 번호로 한 건을 바로 읽는다(항목 번호는 목록의
+       기본 색인이라 목록 크기와 상관없이 한 번에 찾는다). 화면을 연 뒤에 들어온 신청도 새로고침 없이 찾는다.
+       읽은 항목의 제목이 입력과 맞지 않으면 보여 주지 않는다. 읽은 항목은 그 시스템의 원래 필터를 그대로 거친다.
+     · 제목 코드 칸: 빈 칸에 「제목 코드 검색 ex. FA-REG-2026-11-05_ID-128」 처럼 오늘 날짜 예시를 흐리게 보인다(ph).
+       예시가 잘리지 않게 칸 폭(--aps-lf-tw)을 글자 길이에 맞춘다(236 ~ 360px). */
+const APS_LF = {
+  parse(q) {
+    q = String(q ?? '').trim();
+    const low = q.toLowerCase();
+    const y = q.match(/(?:^|\D)(20\d{2})(?=$|[-_.\s])/);
+    const id = q.match(/ID-?(\d+)(?:-\d+)?\s*$/i);
+    return { q, low, norm: low.replace(/(_id-\d+)-\d+$/, '$1'), year: y ? +y[1] : null, id: id ? +id[1] : null };
+  },
+  // 제목이 입력과 맞는가(빈 입력은 모두 통과)
+  title: (t, p) => {
+    if (!p || !p.low) return true;
+    t = String(t ?? '').toLowerCase();
+    return t.indexOf(p.low) >= 0 || (p.norm !== p.low && t.indexOf(p.norm) >= 0);
+  },
+  // 여러 값 가운데 하나라도 검색어를 담고 있는가(빈 검색어는 통과) — 검색어는 소문자로 넘긴다
+  has: (low, ...vals) => !low || vals.some(v => String(v ?? '').toLowerCase().indexOf(low) >= 0),
+  // 제목 검색의 연도 안내 — 지금 보는 연도와 같거나 연도가 없으면 ''
+  note(p) {
+    const Y = window.apsYear;
+    if (!p || !p.year || !Y || typeof Y.get !== 'function' || p.year === Y.get()) return '';
+    if (Y.sites && Y.sites[p.year]) return 'Enter: ' + p.year + '년에서 찾기';
+    return p.year + '년 데이터가 ' + (p.year < Y.home ? '없습니다' : '아직 준비되지 않았습니다');
+  },
+  // Enter — o = { found: 지금 목록에 맞는 건이 있나, getById: async 번호 → 항목, onFound: 항목 → 목록에 넣고 다시 그리기 }
+  async enter(p, o) {
+    const Y = window.apsYear;
+    if (!p || !p.low) return 'empty';
+    if (p.year && Y && typeof Y.get === 'function' && p.year !== Y.get()) {
+      if (Y.sites && Y.sites[p.year]) { Y.set(p.year); return 'year'; }
+      return 'nosite';
+    }
+    if (o.found || !p.id || typeof o.getById !== 'function') return 'local';
+    let it = null;
+    try { it = await o.getById(p.id); } catch (e) { it = null; }
+    if (it && it.fields && APS_LF.title(it.fields.Title, p)) { o.onFound(it); return 'found'; }
+    return 'none';
+  },
+  // 새로고침 단추 — 연타를 막고 아이콘을 돌린다. 실패해도 지금 데이터로 다시 그린다. 고른 필터는 그대로 둔다.
+  async refresh(btn, reload, fallback) {
+    if (btn && btn.disabled) return;
+    if (btn) { btn.disabled = true; btn.classList.add('busy'); }
+    try { await reload(); }
+    catch (e) { console.warn('[목록] 새로고침 실패:', e && e.message); try { if (fallback) fallback(); } catch (_) {} }
+    finally { if (btn) { btn.disabled = false; btn.classList.remove('busy'); } }
+  },
+  // 제목 코드 칸 예시의 번호(「…_ID-128」)
+  EX_N: 128,
+  // 제목 코드 칸(.aps-lf-tw) — 흐린 안내(.aps-lf-ph)에 오늘(KST) 날짜 예시를 넣고, 안내가 잘리지 않게 칸 폭을 맞춘다.
+  // 칸이 숨은 탭에 있으면(크기 0) 글자 폭을 캔버스로 재서 정한다.
+  ph(root) {
+    const today = new Date(Date.now() + 9 * 36e5).toISOString().slice(0, 10);
+    const cv = APS_LF._cv || (APS_LF._cv = document.createElement('canvas').getContext('2d'));
+    (root || document).querySelectorAll('.aps-lf-tw').forEach(w => {
+      const inp = w.querySelector('input'), ph = w.querySelector('.aps-lf-ph');
+      if (!inp || !ph) return;
+      const ex = ph.querySelector('[data-ex]');
+      if (ex) ex.textContent = 'ex. ' + ex.getAttribute('data-ex') + '-' + today + '_ID-' + APS_LF.EX_N;
+      const cs = getComputedStyle(inp);
+      const fs = parseFloat(cs.fontSize) || 13, padL = parseFloat(cs.paddingLeft) || 8;
+      ph.style.fontSize = fs + 'px';
+      ph.style.left = padL + (parseFloat(cs.borderLeftWidth) || 1) + 'px';
+      let need = 0;
+      if (inp.offsetParent) need = ph.scrollWidth + (padL + 1) + 12;
+      else {
+        try {
+          cv.font = fs + 'px ' + cs.fontFamily;
+          const wLabel = cv.measureText(ph.firstChild ? ph.firstChild.textContent : '').width;
+          cv.font = fs * .8 + 'px ' + cs.fontFamily;
+          const wEx = ex ? cv.measureText(ex.textContent).width : 0;
+          need = Math.ceil(wLabel + wEx + 6 + padL + 1 + 14);
+        } catch (e) {}
+      }
+      if (need) w.style.setProperty('--aps-lf-tw', Math.max(236, Math.min(need, 360)) + 'px');
+    });
+  },
+  // 내 신청 목록의 제목 코드 칸 Enter — 다른 연도의 제목이면 그 연도로 옮긴다(내 목록은 불러온 목록 안에서만 찾는다)
+  myEnter: async inp => APS_LF.enter(APS_LF.parse(inp && inp.value), { found: true }),
+};
+// 제목 코드 칸 예시 · 폭 — 화면이 준비되면 한 번, 창 크기가 바뀌거나 칸이 있는 화면에서 누를 때(탭 전환 등) 다시 맞춘다
+!function () {
+  const run = () => { try { APS_LF.ph(); } catch (e) {} };
+  let timer;
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else setTimeout(run, 0);
+  const later = ms => { clearTimeout(timer); timer = setTimeout(run, ms); };
+  window.addEventListener('resize', () => later(150));
+  document.addEventListener('click', () => { if (document.querySelector('.aps-lf-tw')) later(60); }, true);
+}();
+
+/* ── 목록 필터(aps-lf) — 내 신청 · 관리자 필터 줄의 조건을 한 곳에 둔다 ─────────────────────────
+   · 요청 제목 = 이동 내역(LinesJSON)의 Purpose. 내 신청은 From · To 로도 찾는다(예전 검색 범위 유지).
+   · 관리자 목록과 Excel 내보내기는 같은 조건(ltrAdminFilterState · ltrAdminMatch)을 쓴다 — 화면에 보이는 건 = 내보내는 건.
+   · 필터를 바꾸는 동안에는 불러 둔 목록(adminListRaw)으로만 다시 그린다. 다시 읽는 것은 탭을 열 때 · 새로고침 단추(ltrAdminRefresh). */
+function ltrLinesOf(v) {
+  let lns = [];
+  try { lns = JSON.parse((v && v.LinesJSON) || '[]'); } catch (e) { lns = []; }
+  return Array.isArray(lns) ? lns.filter(l => l && typeof l === 'object') : [];
+}
+function ltrListFilterState() {
+  const v = id => (document.getElementById(id) || { value: '' }).value || '';
+  return { status: v('f-status'), kw: v('f-kw').trim().toLowerCase(), title: APS_LF.parse(v('f-title')) };
+}
+function ltrListMatch(v, st) {
+  if (!APS_LF.title(v.Title, st.title)) return false;
+  if (st.status && v.Status !== st.status) return false;
+  if (st.kw) {
+    const lns = ltrLinesOf(v);
+    if (!APS_LF.has(st.kw, v.Title, ...lns.map(l => l.purpose), ...lns.map(l => l.from), ...lns.map(l => l.to))) return false;
+  }
+  return true;
+}
+// 관리자 제목 코드 — 결재행 제목(…_ID-12_3)을 붙여 넣어도 신청 제목(…_ID-12)으로 찾는다
+function ltrTitleQ(q) {
+  return APS_LF.parse(String(q ?? '').replace(/(_ID-\d+)_\d+\s*$/i, '$1'));
+}
+function ltrAdminFilterState() {
+  const v = id => (document.getElementById(id) || { value: '' }).value || '';
+  return { status: v('admin-status'), kw: v('admin-search').trim().toLowerCase(), title: ltrTitleQ(v('admin-title')) };
+}
+function ltrAdminMatch(v, st) {
+  v = v || {};
+  if (st.status && v.Status !== st.status) return false;
+  if (st.kw && !APS_LF.has(st.kw, v.RequesterEmail, v.RequesterName, v.Title, v.DeptHeadEmail, ...ltrLinesOf(v).map(l => l.purpose))) return false;
+  if (!APS_LF.title(v.Title, st.title)) return false;
+  return true;
+}
+// 관리자 제목 코드 칸 Enter — 목록에 없는 건이면 항목 번호로 한 건을 읽어 목록에 넣는다(다른 연도 제목이면 그 연도로)
+async function ltrAdminTitleEnter() {
+  const st = ltrAdminFilterState();
+  const r = await APS_LF.enter(st.title, {
+    found: adminListRaw.some(v => ltrAdminMatch(v, st)),
+    getById: async id => {
+      if (!siteId) { const s = await api('/sites/' + SITE_PATH_DB); siteId = s.id; }
+      return api('/sites/' + siteId + '/lists/' + LIST_REQUESTS + '/items/' + id + '?$expand=fields');
+    },
+    onFound: it => {
+      if (adminListRaw.some(v => String(v._spId) === String(it.id))) return;
+      adminListRaw.push({ _spId: it.id, ...it.fields });
+      adminListRaw.sort((a, b) => new Date(b.SubmittedDate || 0) - new Date(a.SubmittedDate || 0));
+    },
+  });
+  applyAdminFilters();
+  if (r === 'none') {
+    const c = document.getElementById('admin-count');
+    if (c) c.innerHTML = '<span class="aps-lf-note">「' + escHtml(st.title.q) + '」 제목을 찾지 못했습니다</span>';
+  }
+}
+// 새로고침 — 목록을 다시 읽는다(고른 필터는 그대로). 실패하면 지금 데이터로 다시 그린다
+async function ltrAdminRefresh() {
+  await APS_LF.refresh(document.getElementById('admin-refresh'), () => loadAdminList(), () => applyAdminFilters());
+}
+
 // ── 내 신청 목록 ──
 let voucherListCache = [];
 async function loadMyList() {
@@ -2190,17 +2387,10 @@ const fmtDate = s => {
   return `${d.getUTCFullYear()}-${p(d.getUTCMonth()+1)}-${p(d.getUTCDate())} ${p(d.getUTCHours())}:${p(d.getUTCMinutes())}`;
 };
 function renderList(){
-  const fs=document.getElementById('f-status')?.value||'';
-  const fk=(document.getElementById('f-kw')?.value||'').toLowerCase();
-  const list=voucherListCache.filter(v=>{
-    if(fs&&v.Status!==fs)return false;
-    if(fk){
-      let lns=[]; try{lns=JSON.parse(v.LinesJSON||'[]');}catch(e){}
-      const hit = lns.some(l=>(l.from||'').toLowerCase().includes(fk)||(l.to||'').toLowerCase().includes(fk)||(l.purpose||'').toLowerCase().includes(fk));
-      if(!hit) return false;
-    }
-    return true;
-  });
+  const st=ltrListFilterState();   // 목록 필터(aps-lf)
+  const list=voucherListCache.filter(v=>ltrListMatch(v,st));
+  const cnt=document.getElementById('list-count');
+  if(cnt) cnt.textContent='총 '+list.length+'건';
   const body=document.getElementById('list-body');
   if(!list.length){
     body.innerHTML=`<tr><td colspan="9" class="list-empty">${voucherListCache.length?'조회 결과가 없습니다.':'신청 내역이 없습니다.'}</td></tr>`;
@@ -2374,15 +2564,11 @@ async function loadAdminList() {
 
 function applyAdminFilters() {
   _adminPgState.page = 0;
-  const fs = (document.getElementById('admin-status')||{value:''}).value;
-  const fk = ((document.getElementById('admin-search')||{value:''}).value||'').toLowerCase();
-  adminListCache = adminListRaw.filter(v=>{
-    if(fs && v.Status!==fs) return false;
-    if(fk && !(v.RequesterEmail||'').toLowerCase().includes(fk) && !(v.Title||'').toLowerCase().includes(fk) && !(v.DeptHeadEmail||'').toLowerCase().includes(fk)) return false;
-    return true;
-  });
+  const st = ltrAdminFilterState();   // 목록 필터(aps-lf) — Excel 내보내기와 같은 조건
+  adminListCache = adminListRaw.filter(v => ltrAdminMatch(v, st));
   const countEl = document.getElementById('admin-count');
-  if(countEl) countEl.textContent = '총 '+adminListCache.length+'건';
+  const yn = APS_LF.note(st.title);   // 제목에 다른 연도가 있으면 건수 대신 안내
+  if(countEl) countEl.innerHTML = yn ? '<span class="aps-lf-note">' + escHtml(yn) + '</span>' : '총 '+adminListCache.length+'건';
   renderAdminList();
 }
 
@@ -2443,11 +2629,9 @@ async function exportAdminExcel(){
       apiAll(`${GRAPH}/sites/${siteId}/lists/${LIST_REQUESTS}/items?$expand=fields&$top=999`),
       apiAll(`${GRAPH}/sites/${siteId}/lists/${LIST_APPROVALS}/items?$expand=fields&$top=999`)
     ]);
-    const fs = (document.getElementById('admin-status')||{value:''}).value;
-    const fk = ((document.getElementById('admin-search')||{value:''}).value||'').toLowerCase();
-    let items = reqData.value.sort((a,b)=>b.id-a.id);
-    if(fs) items = items.filter(i=>i.fields.Status===fs);
-    if(fk) items = items.filter(i=>((i.fields.RequesterEmail||'')+(i.fields.Title||'')+(i.fields.DeptHeadEmail||'')).toLowerCase().includes(fk));
+    // 관리자 목록과 같은 조건(aps-lf) — 화면에 보이는 건 = 내보내는 건
+    const st = ltrAdminFilterState();
+    const items = reqData.value.sort((a,b)=>b.id-a.id).filter(i=>ltrAdminMatch(i.fields, st));
     if(!items.length){ showAccAlert('내보낼 데이터가 없습니다.', '', '⚠️'); return; }
 
     const apprMap = {};
@@ -2505,7 +2689,7 @@ async function exportAdminExcel(){
     const ds = now.getUTCFullYear()+String(now.getUTCMonth()+1).padStart(2,'0')+String(now.getUTCDate()).padStart(2,'0')+'_'+String(now.getUTCHours()).padStart(2,'0')+String(now.getUTCMinutes()).padStart(2,'0');
     XLSX.writeFile(wb, 'LTR-PC_Admin_'+ds+'.xlsx');
     // 출력 기록(10-10) — FA · BP · GW 의 「Excel 내보내기」 기록과 같은 모양. 비차단 · 실패해도 내보내기에 영향 없음
-    try { logAction('LTR-PC', 'Excel 내보내기', { 건수: items.length, 필터: { 상태: fs || '전체', 검색어: fk || '' } }); } catch (le) { console.warn('[Log] Excel 내보내기 기록 생략:', le && le.message); }
+    try { logAction('LTR-PC', 'Excel 내보내기', { 건수: items.length, 필터: { 상태: st.status || '전체', 검색어: st.kw || '', 제목: st.title.q || '' } }); } catch (le) { console.warn('[Log] Excel 내보내기 기록 생략:', le && le.message); }
   } catch(e) {
     console.error('exportAdminExcel error:', e);
     try { const _ls = (document.getElementById('admin-status') || { value: '' }).value, _lk = (document.getElementById('admin-search') || { value: '' }).value || ''; logAction('LTR-PC', 'Excel 내보내기 실패', { 필터: { 상태: _ls || '전체', 검색어: _lk.toLowerCase() }, 오류: String((e && e.message) || e || '').slice(0, 200) }); } catch (le) { console.warn('[Log] Excel 내보내기 실패 기록 생략:', le && le.message); }
